@@ -14,7 +14,13 @@
             class="cover-image"
             :src="getProxyImageUrl(currentResource.image as string)"
             :fit="currentResource.image ? 'cover' : 'contain'"
-          />
+          >
+            <template #error>
+              <div class="image-slot" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;background:#f5f7fa;">
+                <el-image :src="defaultImage" fit="contain" style="width: 50%; opacity: 0.7;" />
+              </div>
+            </template>
+          </el-image>
           <el-tag
             class="cloud-type"
             :type="store.tagColor[currentResource.cloudType as keyof TagColor]"
@@ -109,7 +115,13 @@
                   :fit="resource.image ? 'cover' : 'contain'"
                   :alt="resource.title"
                   @click="showResourceDetail(resource)"
-                />
+                >
+                  <template #error>
+                    <div class="image-slot" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;background:#f5f7fa;">
+                      <el-image :src="defaultImage" fit="contain" style="width: 50%; opacity: 0.7;" />
+                    </div>
+                  </template>
+                </el-image>
                 <el-tag
                   class="cloud-type"
                   :type="store.tagColor[resource.cloudType as keyof TagColor]"
@@ -180,7 +192,7 @@ import { useResourceStore } from "@/stores/resource";
 import { ref } from "vue";
 import type { ResourceItem, TagColor } from "@/types";
 import { ArrowDown, Plus } from "@element-plus/icons-vue";
-import { getProxyImageUrl } from "@/utils/image";
+import { getProxyImageUrl, defaultImage } from "@/utils/image";
 
 const store = useResourceStore();
 

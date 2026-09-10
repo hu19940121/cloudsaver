@@ -65,27 +65,40 @@ export class QuarkService implements ICloudStorageService {
     }
   }
 
-  async getShareInfo(pwdId: string, passcode = ""): Promise<ShareInfoResponse> {
-    const response = await this.api.post(
-      `/1/clouddrive/share/sharepage/token?pr=ucpro&fr=pc&uc_param_str=&__dt=994&__t=${Date.now()}`,
-      {
-        pwd_id: pwdId,
-        passcode,
+  async getShareInfo(
+    pwdId: string,
+    passcode = "",
+    pdirFid = "0",
+    stoken = ""
+  ): Promise<ShareInfoResponse> {
+    let currentStoken = stoken;
+    if (!currentStoken) {
+      const response = await this.api.post(
+        `/1/clouddrive/share/sharepage/token?pr=ucpro&fr=pc&uc_param_str=&__dt=994&__t=${Date.now()}`,
+        {
+          pwd_id: pwdId,
+          passcode,
+        }
+      );
+      if (response.data?.status === 200 && response.data.data) {
+        currentStoken = response.data.data.stoken;
       }
-    );
-    if (response.data?.status === 200 && response.data.data) {
-      const fileInfo = response.data.data;
-      if (fileInfo.stoken) {
-        const res = await this.getShareList(pwdId, fileInfo.stoken);
-        return {
-          data: res,
-        };
-      }
+    }
+
+    if (currentStoken) {
+      const res = await this.getShareList(pwdId, currentStoken, pdirFid || "0");
+      return {
+        data: res,
+      };
     }
     throw new Error("获取夸克分享信息失败");
   }
 
-  async getShareList(pwdId: string, stoken: string): Promise<ShareInfoResponse["data"]> {
+  async getShareList(
+    pwdId: string,
+    stoken: string,
+    pdirFid = "0"
+  ): Promise<ShareInfoResponse["data"]> {
     const response = await this.api.get("/1/clouddrive/share/sharepage/detail", {
       params: {
         pr: "ucpro",
@@ -93,10 +106,10 @@ export class QuarkService implements ICloudStorageService {
         uc_param_str: "",
         pwd_id: pwdId,
         stoken: stoken,
-        pdir_fid: "0",
+        pdir_fid: pdirFid || "0",
         force: "0",
         _page: "1",
-        _size: "50",
+        _size: "100",
         _fetch_banner: "1",
         _fetch_share: "1",
         _fetch_total: "1",
@@ -107,11 +120,15 @@ export class QuarkService implements ICloudStorageService {
     });
     if (response.data?.data) {
       const list = response.data.data.list
-        .filter((item: QuarkShareInfo["list"][0]) => item.fid)
-        .map((folder: QuarkShareInfo["list"][0]) => ({
-          fileId: folder.fid,
-          fileName: folder.file_name,
-          fileIdToken: folder.share_fid_token,
+        .filter((item: any) => item.fid)
+        .map((item: any) => ({
+          fileId: item.fid,
+          fileName: item.file_name,
+          fileIdToken: item.share_fid_token,
+          fileSize: item.size || 0,
+          isDir: item.file_type === 0,
+          fileType: item.file_type,
+          pdirFid: item.pdir_fid || pdirFid || "0",
         }));
       return {
         list,
@@ -167,7 +184,7 @@ export class QuarkService implements ICloudStorageService {
       to_pdir_fid: params.folderId,
       pwd_id: params.shareCode,
       stoken: params.receiveCode,
-      pdir_fid: "0",
+      pdir_fid: params.pdirFid || "0",
       scene: "link",
     };
     try {
@@ -176,12 +193,80 @@ export class QuarkService implements ICloudStorageService {
         quarkParams
       );
 
+      // 若存在自定义重命名需求，在保存完成后自动执行重命名
+      if (params.renames && params.renames.length > 0) {
+        this.processRenames(params.folderId || "0", params.renames).catch((err) => {
+          logger.error("夸克自动重命名任务异常:", err);
+        });
+      }
+
       return {
         message: response.data.message,
         data: response.data.data,
       };
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : "未知错误");
+    }
+  }
+
+  private async processRenames(
+    targetFolderId: string,
+    renames: NonNullable<SaveFileParams["renames"]>
+  ): Promise<void> {
+    // 延迟 1.5 秒，等待夸克后端将文件复制到目标目录
+    await new Promise((r) => setTimeout(r, 1500));
+
+    try {
+      // 获取目标目录下的最新文件列表
+      const sortResp = await this.api.get("/1/clouddrive/file/sort", {
+        params: {
+          pr: "ucpro",
+          fr: "pc",
+          uc_param_str: "",
+          pdir_fid: targetFolderId,
+          _page: "1",
+          _size: "100",
+          _fetch_total: "false",
+          _fetch_sub_dirs: "0",
+          _sort: "updated_at:desc",
+          __t: Date.now(),
+        },
+      });
+
+      const fileList = sortResp.data?.data?.list || [];
+      for (const renameItem of renames) {
+        if (!renameItem.newName || renameItem.newName === renameItem.originalName) {
+          continue;
+        }
+        // 匹配目标文件夹下具有原始名称的文件
+        const matched = fileList.find(
+          (f: any) => f.file_name === renameItem.originalName
+        );
+        if (matched && matched.fid) {
+          await this.renameFile(matched.fid, renameItem.newName);
+          logger.info(
+            `夸克文件自动重命名成功: "${renameItem.originalName}" -> "${renameItem.newName}"`
+          );
+        }
+      }
+    } catch (error) {
+      logger.error("夸克执行重命名处理失败:", error);
+    }
+  }
+
+  async renameFile(fid: string, newName: string): Promise<boolean> {
+    try {
+      const resp = await this.api.post(
+        `/1/clouddrive/file/rename?pr=ucpro&fr=pc&__t=${Date.now()}`,
+        {
+          fid,
+          file_name: newName,
+        }
+      );
+      return resp.data?.status === 200;
+    } catch (err) {
+      logger.error(`夸克重命名接口调用失败 (fid: ${fid}):`, err);
+      return false;
     }
   }
 }

@@ -57,11 +57,22 @@ export class ImageService {
   async getImages(url: string): Promise<any> {
     const axiosInstance = await this.ensureAxiosInstance();
 
+    let referer = "";
+    try {
+      if (url.includes("doubanio.com")) {
+        referer = "https://movie.douban.com/";
+      } else {
+        referer = new URL(url).origin;
+      }
+    } catch (e) {
+      referer = "";
+    }
+
     return await axiosInstance.get(url, {
       responseType: "stream",
       validateStatus: (status) => status >= 200 && status < 300,
       headers: {
-        Referer: new URL(url).origin,
+        Referer: referer,
       },
     });
   }

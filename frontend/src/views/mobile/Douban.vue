@@ -12,13 +12,17 @@
         <div class="douban__poster">
           <van-image
             class="poster__img"
-            :src="movie.cover"
+            :src="getDoubanImageUrl(movie.cover)"
             fit="cover"
             lazy
             loading="skeleton"
             :alt="movie.title"
-            @click="previewImage(movie.cover)"
-          />
+            @click="previewImage(getDoubanImageUrl(movie.cover))"
+          >
+            <template #error>
+              <img :src="defaultImage" style="width: 100%; height: 100%; object-fit: cover;" />
+            </template>
+          </van-image>
           <!-- 评分标签 -->
           <van-tag
             class="poster__rate"
@@ -51,6 +55,7 @@ import { computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useDoubanStore } from "@/stores/douban";
 import { showImagePreview } from "vant";
+import { getDoubanImageUrl, defaultImage } from "@/utils/image";
 
 interface CurrentParams {
   type: string;

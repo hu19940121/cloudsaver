@@ -8,6 +8,8 @@ export interface GlobalSettingAttributes {
   isProxyEnabled: boolean;
   CommonUserCode: number;
   AdminUserCode: number;
+  teleChannels?: string;
+  jiaofuCookie?: string;
 }
 
 interface GlobalSettingCreationAttributes extends Optional<GlobalSettingAttributes, "id"> {}
@@ -22,6 +24,8 @@ class GlobalSetting
   public isProxyEnabled!: boolean;
   public CommonUserCode!: number;
   public AdminUserCode!: number;
+  public teleChannels?: string;
+  public jiaofuCookie?: string;
 }
 
 GlobalSetting.init(
@@ -55,6 +59,16 @@ GlobalSetting.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 230713,
+    },
+    teleChannels: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: "",
+    },
+    jiaofuCookie: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: "",
     },
   },
   {

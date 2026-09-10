@@ -16,8 +16,8 @@ export class ImageController extends BaseController {
       const response = await this.imageService.getImages(url);
 
       // 设置正确的响应头
-      res.setHeader("Content-Type", response.headers["content-type"]);
-      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Content-Type", response.headers["content-type"] || "image/jpeg");
+      res.setHeader("Cache-Control", "public, max-age=86400");
 
       // 确保清除任何可能导致304响应的头信息
       res.removeHeader("etag");

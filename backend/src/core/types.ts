@@ -8,6 +8,7 @@ export const TYPES = {
   SettingService: Symbol.for("SettingService"),
   UserService: Symbol.for("UserService"),
   SponsorsService: Symbol.for("SponsorsService"),
+  JiaofuService: Symbol.for("JiaofuService"),
 
   Cloud115Controller: Symbol.for("Cloud115Controller"),
   QuarkController: Symbol.for("QuarkController"),

@@ -5,13 +5,19 @@
         <div class="movie-poster">
           <el-image
             class="movie-poster-img"
-            :src="movie.cover"
+            :src="getDoubanImageUrl(movie.cover)"
             fit="cover"
             lazy
             :alt="movie.title"
             hide-on-click-modal
-            :preview-src-list="[movie.cover]"
-          />
+            :preview-src-list="[getDoubanImageUrl(movie.cover)]"
+          >
+            <template #error>
+              <div class="image-slot" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; background: #222;">
+                <el-image :src="defaultImage" fit="cover" />
+              </div>
+            </template>
+          </el-image>
           <div class="movie-rate">
             {{ movie.rate }}
           </div>
@@ -35,6 +41,7 @@
 import { computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useDoubanStore } from "@/stores/douban";
+import { getDoubanImageUrl, defaultImage } from "@/utils/image";
 interface CurrentParams {
   type: string;
   tag?: string;

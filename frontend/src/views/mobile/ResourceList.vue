@@ -41,6 +41,27 @@
       </van-tab>
     </van-tabs>
 
+    <!-- 空状态 -->
+    <div v-if="resourceStore.resources.length === 0" class="resource-list__empty">
+      <van-empty
+        :description="
+          resourceStore.unconfigured
+            ? '尚未配置搜索源，请前往设置配置 Telegram 频道或教父 Cookie'
+            : '暂无资源'
+        "
+      >
+        <van-button
+          round
+          type="primary"
+          size="small"
+          style="margin-top: 12px;"
+          @click="router.push('/setting')"
+        >
+          前往设置
+        </van-button>
+      </van-empty>
+    </div>
+
     <!-- 保存弹窗 -->
     <van-popup
       v-model:show="saveDialogVisible"
@@ -76,6 +97,7 @@
           <resource-select
             v-if="saveDialogVisible && saveDialogStep === 1 && resourceStore.resourceSelect.length"
             :cloud-type="currentResource?.cloudType"
+            :resource="currentResource"
           />
 
           <folder-select

@@ -10,6 +10,8 @@ export interface ShareInfoResponse {
 export interface GetShareInfoParams {
   shareCode: string;
   receiveCode?: string;
+  pdirFid?: string;
+  stoken?: string;
 }
 
 export interface ShareInfoItem {
@@ -17,6 +19,9 @@ export interface ShareInfoItem {
   fileName: string;
   fileSize?: number;
   fileIdToken?: string;
+  isDir?: boolean;
+  fileType?: number;
+  pdirFid?: string;
 }
 export interface FolderListResponse {
   data: {
@@ -26,12 +31,20 @@ export interface FolderListResponse {
   }[];
 }
 
+export interface FileRenameItem {
+  fileId: string;
+  originalName: string;
+  newName: string;
+}
+
 export interface SaveFileParams {
   shareCode: string; // 分享code
   receiveCode?: string; // 分享文件的密码
   folderId?: string; // 文件夹id
   fids?: string[]; // 存储文件id
   fidTokens?: string[]; // 存储文件token
+  pdirFid?: string; // 父目录id
+  renames?: FileRenameItem[]; // 自定义重命名列表
 }
 
 export interface SaveFileResponse {
