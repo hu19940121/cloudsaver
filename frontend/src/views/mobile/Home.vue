@@ -51,6 +51,7 @@ import { useRouter, useRoute } from "vue-router";
 import { showConfirmDialog } from "vant";
 import { useResourceStore } from "@/stores/resource";
 import { useUserSettingStore } from "@/stores/userSetting";
+import { userApi } from "@/api/user";
 
 // 接口定义
 interface SearchForm {
@@ -112,8 +113,8 @@ const handleLogout = () => {
   showConfirmDialog({
     title: "退出登录",
     message: "确定要退出登录吗？",
-  }).then(() => {
-    localStorage.removeItem("token");
+  }).then(async () => {
+    await userApi.logout().catch(() => undefined);
     router.push("/login");
   });
 };

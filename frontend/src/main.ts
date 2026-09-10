@@ -11,8 +11,13 @@ import "vant/es/notify/style";
 import "vant/es/dialog/style";
 import "@/styles/responsive.scss";
 import "@/styles/common.scss";
+import { STORAGE_KEYS } from "@/constants/storage";
 
 import router from "./router/index";
+
+// 清除旧版本遗留在 localStorage 中的明文密码和 JWT。
+localStorage.removeItem(STORAGE_KEYS.PASSWORD);
+localStorage.removeItem(STORAGE_KEYS.TOKEN);
 
 const app = createApp(App);
 

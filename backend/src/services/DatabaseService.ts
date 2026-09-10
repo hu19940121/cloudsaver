@@ -2,17 +2,26 @@ import { Sequelize, QueryTypes } from "sequelize";
 import GlobalSetting from "../models/GlobalSetting";
 import { Searcher } from "./Searcher";
 import sequelize from "../config/database";
+import User from "../models/User";
+
+const getRequiredRegistrationCode = (name: string): string => {
+  const value = process.env[name]?.trim();
+  if (!value || value.length < 16) {
+    throw new Error(`${name} 必须设置为至少 16 个字符的随机字符串`);
+  }
+  return value;
+};
 
 // 全局设置默认值
-const DEFAULT_GLOBAL_SETTINGS = {
+const getDefaultGlobalSettings = () => ({
   httpProxyHost: "127.0.0.1",
   httpProxyPort: 7890,
   isProxyEnabled: false,
-  CommonUserCode: "5549",
-  AdminUserCode: "012101",
+  CommonUserCode: getRequiredRegistrationCode("COMMON_REGISTRATION_CODE"),
+  AdminUserCode: getRequiredRegistrationCode("ADMIN_REGISTRATION_CODE"),
   teleChannels: "",
   jiaofuCookie: "",
-};
+});
 
 export class DatabaseService {
   private sequelize: Sequelize;
@@ -37,13 +46,36 @@ export class DatabaseService {
     try {
       const settings = await GlobalSetting.findOne();
       if (!settings) {
-        await GlobalSetting.create(DEFAULT_GLOBAL_SETTINGS);
+        await GlobalSetting.create(getDefaultGlobalSettings());
         console.log("✅ Global settings initialized with default values.");
       }
+      await this.rotateLegacyRegistrationCodes();
       await Searcher.updateAxiosInstance();
     } catch (error) {
       console.error("❌ Failed to initialize global settings:", error);
       throw error;
+    }
+  }
+
+  private async rotateLegacyRegistrationCodes(): Promise<void> {
+    const settings = await GlobalSetting.findOne();
+    if (!settings) return;
+
+    const updates: Partial<{ CommonUserCode: string; AdminUserCode: string }> = {};
+    if (String(settings.CommonUserCode) === "5549") {
+      updates.CommonUserCode = getRequiredRegistrationCode("COMMON_REGISTRATION_CODE");
+    }
+    if (String(settings.AdminUserCode) === "012101") {
+      updates.AdminUserCode = getRequiredRegistrationCode("ADMIN_REGISTRATION_CODE");
+    }
+    if (Object.keys(updates).length > 0) {
+      await settings.update(updates);
+      console.log("✅ 已替换旧版默认注册码。");
+    }
+
+    const adminCount = await User.count({ where: { role: 1 } });
+    if (adminCount > 0) {
+      console.log("✅ 管理员已初始化，管理员注册码不再接受新注册。");
     }
   }
 

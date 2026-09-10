@@ -3,7 +3,6 @@ import { ElMessage } from "element-plus";
 import { isMobileDevice } from "@/utils/index";
 import { showNotify } from "vant";
 import { RequestResult } from "../types/response";
-import { STORAGE_KEYS } from "@/constants/storage";
 
 const errorMessage = (message: string) => {
   if (isMobileDevice()) {
@@ -26,21 +25,8 @@ const axiosInstance = axios.create({
   },
 });
 
-function isLoginAndRedirect(url: string) {
-  return url.includes("/api/user/login") || url.includes("/api/user/register");
-}
-
 axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    } else if (!isLoginAndRedirect(config.url || "")) {
-      errorMessage("请先登录");
-      window.location.href = "/login";
-    }
-    return config;
-  },
+  (config) => config,
   (error) => {
     return Promise.reject(error);
   }
@@ -52,14 +38,16 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   (error) => {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       errorMessage("登录过期，请重新登录");
-      localStorage.removeItem(STORAGE_KEYS.TOKEN);
-      window.location.href = "/login";
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
       return Promise.reject(new Error("登录过期，请重新登录"));
     }
-    errorMessage(error.response.statusText);
-    return Promise.reject(new Error(error.response.statusText));
+    const message = error.response?.data?.message || error.response?.statusText || "网络请求失败";
+    errorMessage(message);
+    return Promise.reject(new Error(message));
   }
 );
 

@@ -79,8 +79,8 @@
               </el-form-item>
 
               <div class="form-extras">
-                <el-checkbox v-model="rememberPassword" class="remember-check">
-                  记住密码
+                <el-checkbox v-model="rememberLogin" class="remember-check">
+                  保持登录（最长 6 小时）
                 </el-checkbox>
               </div>
 
@@ -179,7 +179,7 @@ import type { FormItemRule } from "element-plus";
 // 状态
 const activeTab = ref("login");
 const loading = ref(false);
-const rememberPassword = ref(false);
+const rememberLogin = ref(false);
 
 const loginForm = ref({
   username: "",
@@ -197,11 +197,11 @@ const registerForm = ref({
 const loginRules = {
   username: [
     { required: true, message: "请输入用户名", trigger: "blur" },
-    { min: 3, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur" },
+    { min: 3, max: 32, message: "长度在 3 到 32 个字符", trigger: "blur" },
   ],
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" },
+    { min: 10, max: 72, message: "长度在 10 到 72 个字符", trigger: "blur" },
   ],
 };
 
@@ -227,15 +227,14 @@ const router = useRouter();
 const loginFormRef = ref();
 const registerFormRef = ref();
 
-// 记住密码相关
+// 清理旧版本曾保存在浏览器中的明文密码和 JWT
 onMounted(() => {
   const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
-  const savedPassword = localStorage.getItem(STORAGE_KEYS.PASSWORD);
-  if (savedUsername && savedPassword) {
+  if (savedUsername) {
     loginForm.value.username = savedUsername;
-    loginForm.value.password = savedPassword;
-    rememberPassword.value = true;
   }
+  localStorage.removeItem(STORAGE_KEYS.PASSWORD);
+  localStorage.removeItem(STORAGE_KEYS.TOKEN);
 });
 
 // 登录处理
@@ -246,18 +245,13 @@ const handleLogin = async () => {
     if (valid) {
       loading.value = true;
       try {
-        const res = await userApi.login(loginForm.value);
+        const res = await userApi.login({ ...loginForm.value, rememberMe: rememberLogin.value });
         if (res.code === 0) {
-          // 记住密码
-          if (rememberPassword.value) {
+          if (rememberLogin.value) {
             localStorage.setItem(STORAGE_KEYS.USERNAME, loginForm.value.username);
-            localStorage.setItem(STORAGE_KEYS.PASSWORD, loginForm.value.password);
           } else {
             localStorage.removeItem(STORAGE_KEYS.USERNAME);
-            localStorage.removeItem(STORAGE_KEYS.PASSWORD);
           }
-
-          localStorage.setItem(STORAGE_KEYS.TOKEN, res.data.token);
           ElMessage.success("登录成功");
           router.push("/");
         } else {

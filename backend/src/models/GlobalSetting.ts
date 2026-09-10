@@ -53,12 +53,12 @@ GlobalSetting.init(
     CommonUserCode: {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: "5549",
+      defaultValue: "",
     },
     AdminUserCode: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "012101",
+      defaultValue: "",
     },
     teleChannels: {
       type: DataTypes.TEXT,

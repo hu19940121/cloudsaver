@@ -32,6 +32,7 @@ router.get("/health", (_req, res) => {
 // 用户相关路由
 router.post("/user/login", (req, res) => userController.login(req, res));
 router.post("/user/register", (req, res) => userController.register(req, res));
+router.post("/user/logout", (req, res) => userController.logout(req, res));
 
 // 图片相关路由
 router.get("/tele-images", (req, res) => imageController.getImages(req, res));

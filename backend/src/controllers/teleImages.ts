@@ -12,7 +12,7 @@ export class ImageController extends BaseController {
 
   async getImages(req: Request, res: Response): Promise<void> {
     await this.handleRequest(req, res, async () => {
-      const url = decodeURIComponent((req.query.url as string) || "");
+      const url = (req.query.url as string) || "";
       const response = await this.imageService.getImages(url);
 
       // 设置正确的响应头

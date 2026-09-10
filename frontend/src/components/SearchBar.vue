@@ -61,7 +61,7 @@ import {
   SwitchButton,
   CircleClose,
 } from "@element-plus/icons-vue";
-import { STORAGE_KEYS } from "@/constants/storage";
+import { userApi } from "@/api/user";
 
 const route = useRoute();
 const router = useRouter();
@@ -71,8 +71,8 @@ const keyword = ref("");
 const isInputFocused = ref(false);
 const routeKeyword = computed(() => route.query.keyword as string);
 
-const handleLogout = () => {
-  localStorage.removeItem(STORAGE_KEYS.TOKEN);
+const handleLogout = async () => {
+  await userApi.logout().catch(() => undefined);
   router.push("/login");
   ElMessage.success("已安全退出登录");
 };

@@ -9,10 +9,11 @@ services:
     restart: unless-stopped
     init: true
     ports:
-      - "${CLOUDSAVER_PORT:-8008}:8008"
+      - "127.0.0.1:${CLOUDSAVER_PORT:-8008}:8008"
     environment:
       NODE_ENV: production
       PORT: 8009
+      PUBLIC_ORIGIN: "${PUBLIC_ORIGIN:-}"
     volumes:
       - ./data:/app/data
       - ./config:/app/config

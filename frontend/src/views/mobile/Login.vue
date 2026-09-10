@@ -50,8 +50,8 @@
 
               <!-- 优化记住密码选项 -->
               <div class="login__remember">
-                <van-checkbox v-model="rememberPassword" class="remember-checkbox">
-                  记住密码
+              <van-checkbox v-model="rememberLogin" class="remember-checkbox">
+                  保持登录（最长 6 小时）
                 </van-checkbox>
               </div>
             </van-cell-group>
@@ -173,7 +173,7 @@ interface RegisterForm {
 const activeTab = ref("login");
 const isLoading = ref(false);
 const loginPasswordRef = ref<FieldInstance>();
-const rememberPassword = ref(false);
+const rememberLogin = ref(false);
 
 const loginForm = ref<LoginForm>({
   username: "",
@@ -200,33 +200,28 @@ const validateConfirmPassword = (value: string) => {
   return value === registerForm.value.password;
 };
 
-// 在组件加载时检查是否有保存的账号密码
+// 清理旧版本曾保存在浏览器中的明文密码和 JWT
 onMounted(() => {
   const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
-  const savedPassword = localStorage.getItem(STORAGE_KEYS.PASSWORD);
-  if (savedUsername && savedPassword) {
+  if (savedUsername) {
     loginForm.value.username = savedUsername;
-    loginForm.value.password = savedPassword;
-    rememberPassword.value = true;
   }
+  localStorage.removeItem(STORAGE_KEYS.PASSWORD);
+  localStorage.removeItem(STORAGE_KEYS.TOKEN);
 });
 
 // 登录处理
 const handleLogin = async () => {
   try {
     isLoading.value = true;
-    const res = await userApi.login(loginForm.value);
+    const res = await userApi.login({ ...loginForm.value, rememberMe: rememberLogin.value });
 
     if (res.code === 0) {
-      if (rememberPassword.value) {
+      if (rememberLogin.value) {
         localStorage.setItem(STORAGE_KEYS.USERNAME, loginForm.value.username);
-        localStorage.setItem(STORAGE_KEYS.PASSWORD, loginForm.value.password);
       } else {
         localStorage.removeItem(STORAGE_KEYS.USERNAME);
-        localStorage.removeItem(STORAGE_KEYS.PASSWORD);
       }
-
-      localStorage.setItem(STORAGE_KEYS.TOKEN, res.data.token);
       await router.push("/");
     } else {
       showNotify({ type: "danger", message: res.message || "登录失败" });
@@ -279,7 +274,7 @@ const usernameRules: FieldRule[] = [
 
 const passwordRules: FieldRule[] = [
   { required: true, message: "请填写密码" },
-  { pattern: /.{6,}/, message: "密码至少6个字符" },
+  { pattern: /^.{10,72}$/, message: "密码长度须为10到72个字符" },
 ];
 
 const confirmPasswordRules: FieldRule[] = [

@@ -3,6 +3,11 @@ import dotenv from "dotenv";
 // 加载.env文件
 dotenv.config();
 
+const jwtSecret = process.env.JWT_SECRET?.trim();
+if (!jwtSecret || jwtSecret.length < 32 || jwtSecret === "change-me") {
+  throw new Error("JWT_SECRET 必须设置为至少 32 个字符的随机字符串");
+}
+
 interface Channel {
   id: string;
   name: string;
@@ -37,6 +42,11 @@ interface Config {
     secret: string;
     expiresIn: string;
   };
+  auth: {
+    cookieName: string;
+    issuer: string;
+    audience: string;
+  };
 }
 
 // 从环境变量读取频道配置
@@ -64,10 +74,15 @@ export const config: Config = {
     path: "./data/database.sqlite",
   },
   jwt: {
-    secret: process.env.JWT_SECRET || "your-secret-key",
+    secret: jwtSecret,
     expiresIn: "6h",
   },
-  jwtSecret: process.env.JWT_SECRET || "uV7Y$k92#LkF^q1b!",
+  jwtSecret,
+  auth: {
+    cookieName: "cloudsaver_session",
+    issuer: "cloudsaver",
+    audience: "cloudsaver-web",
+  },
 
   telegram: {
     baseUrl: process.env.TELEGRAM_BASE_URL || "https://t.me/s",
