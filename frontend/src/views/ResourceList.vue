@@ -65,13 +65,33 @@
       <div v-if="resourceStore.resources.length === 0" class="pc-resources__empty">
         <el-empty :image-size="200">
           <template #description>
-            <p class="empty-text">暂无资源</p>
-            <el-tooltip effect="dark" content="点击获取最新资源" placement="top">
-              <el-button type="primary" @click="refreshResources">
-                <el-icon><Refresh /></el-icon>
-                <span>刷新资源</span>
+            <div v-if="resourceStore.unconfigured">
+              <p class="empty-text" style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">
+                尚未配置资源搜索源
+              </p>
+              <p class="empty-subtext" style="color: var(--theme-text-secondary); margin-bottom: 16px;">
+                请前往系统设置添加 Telegram 搜索频道或配置教父资源站 Cookie
+              </p>
+              <el-button type="primary" @click="goToSetting">
+                <el-icon><Setting /></el-icon>
+                <span>立即前往设置</span>
               </el-button>
-            </el-tooltip>
+            </div>
+            <div v-else>
+              <p class="empty-text">暂无资源</p>
+              <div style="display: flex; gap: 12px; justify-content: center;">
+                <el-tooltip effect="dark" content="点击获取最新资源" placement="top">
+                  <el-button type="primary" @click="refreshResources">
+                    <el-icon><Refresh /></el-icon>
+                    <span>刷新资源</span>
+                  </el-button>
+                </el-tooltip>
+                <el-button type="info" plain @click="goToSetting">
+                  <el-icon><Setting /></el-icon>
+                  <span>搜索源设置</span>
+                </el-button>
+              </div>
+            </div>
           </template>
         </el-empty>
       </div>
@@ -124,6 +144,7 @@
         <resource-select
           v-if="saveDialogVisible && saveDialogStep === 1 && resourceStore.resourceSelect.length"
           :cloud-type="currentResource.cloudType"
+          :resource="currentResource"
         />
         <folder-select
           v-if="saveDialogVisible && saveDialogStep === 2"
@@ -166,8 +187,12 @@ import { onMounted, onBeforeUnmount } from "vue";
 import ResourceCard from "@/components/Home/ResourceCard.vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { ArrowUp } from "@element-plus/icons-vue";
+import { ArrowUp, Setting } from "@element-plus/icons-vue";
 const router = useRouter();
+
+const goToSetting = () => {
+  router.push("/setting");
+};
 
 const resourceStore = useResourceStore();
 const userStore = useUserSettingStore();

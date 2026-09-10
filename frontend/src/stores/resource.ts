@@ -6,6 +6,7 @@ import type {
   Resource,
   ShareInfoResponse,
   ShareInfo,
+  ShareInfoItem,
   ResourceItem,
   GetShareInfoParams,
   SaveFileParams,
@@ -80,6 +81,8 @@ export const CLOUD_DRIVES: CloudDriveConfig[] = [
       folderId: shareInfoAndFolder.folderId,
       shareCode: shareInfoAndFolder.shareInfo.pwdId || "",
       receiveCode: shareInfoAndFolder.shareInfo.stoken || "",
+      pdirFid: shareInfoAndFolder.pdirFid || "0",
+      renames: shareInfoAndFolder.renames,
     }),
   },
 ];
@@ -101,6 +104,8 @@ export const useResourceStore = defineStore("resource", {
     loading: false,
     backupPlan: false,
     loadTree: false,
+    unconfigured: false,
+    currentPdirFid: "0",
   }),
 
   actions: {
@@ -126,7 +131,15 @@ export const useResourceStore = defineStore("resource", {
           }
           keyword = this.keyword;
         }
-        let { data = [] } = await resourceApi.search(keyword || "", channelId, lastMessageId);
+        const res = await resourceApi.search(keyword || "", channelId, lastMessageId);
+        this.unconfigured = Boolean((res as any).unconfigured);
+        if (this.unconfigured) {
+          ElMessage.warning((res as any).message || "尚未配置搜索源，请先前往【设置】页面进行配置");
+          this.resources = [];
+          return;
+        }
+
+        let { data = [] } = res;
         this.keyword = keyword || "";
         data = data
           .filter((item) => item.list.length > 0)
@@ -203,12 +216,21 @@ export const useResourceStore = defineStore("resource", {
         ...this.shareInfo,
         list: this.resourceSelect.filter((x) => x.isChecked),
       };
-      console.log(shareInfo);
+
+      const renames = this.resourceSelect
+        .filter((x) => x.isChecked && x.customName && x.customName.trim() !== x.fileName.trim())
+        .map((x) => ({
+          fileId: x.fileId,
+          originalName: x.fileName,
+          newName: x.customName!.trim(),
+        }));
 
       const params = drive.getSaveParams({
         shareInfo,
         ...parsedCode,
         folderId,
+        pdirFid: this.currentPdirFid || "0",
+        renames: renames.length > 0 ? renames : undefined,
       });
       const result = await drive.api.saveFile(params);
 
@@ -290,11 +312,40 @@ export const useResourceStore = defineStore("resource", {
           ...parsedCode,
         };
         this.shareInfo = shareInfo;
+        this.currentPdirFid = "0";
         this.setSelectedResource(this.shareInfo.list.map((x) => ({ ...x, isChecked: true })));
         return true;
       } else {
         ElMessage.error("获取资源信息失败,请先检查cookie!");
         return false;
+      }
+    },
+
+    // 获取分享文件夹内的子文件列表
+    async fetchShareFolder(resource: ResourceItem, pdirFid: string): Promise<ShareInfoItem[]> {
+      const { cloudType } = resource;
+      const drive = CLOUD_DRIVES.find((x) => x.type === cloudType);
+      if (!drive) return [];
+
+      const link = resource.cloudLinks.find((l) => drive.regex.test(l));
+      if (!link) return [];
+
+      const match = link.match(drive.regex);
+      if (!match) return [];
+
+      const parsedCode = drive.parseShareCode(match);
+      try {
+        const res = await drive.api.getShareInfo({
+          ...parsedCode,
+          pdirFid,
+          stoken: this.shareInfo.stoken,
+        });
+        this.currentPdirFid = pdirFid;
+        return res?.list || [];
+      } catch (e) {
+        console.error("加载子文件夹失败:", e);
+        ElMessage.error("加载文件夹内容失败");
+        return [];
       }
     },
 

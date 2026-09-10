@@ -11,6 +11,7 @@ import { UserService } from "./services/UserService";
 import { ImageService } from "./services/ImageService";
 import { SettingService } from "./services/SettingService";
 import { SponsorsService } from "./services/SponsorsService";
+import { JiaofuService } from "./services/JiaofuService";
 // Controllers
 import { Cloud115Controller } from "./controllers/cloud115";
 import { QuarkController } from "./controllers/quark";
@@ -32,6 +33,7 @@ container.bind<SettingService>(TYPES.SettingService).to(SettingService).inSingle
 container.bind<DoubanService>(TYPES.DoubanService).to(DoubanService).inSingletonScope();
 container.bind<UserService>(TYPES.UserService).to(UserService).inSingletonScope();
 container.bind<SponsorsService>(TYPES.SponsorsService).to(SponsorsService).inSingletonScope();
+container.bind<JiaofuService>(TYPES.JiaofuService).to(JiaofuService).inSingletonScope();
 // Controllers
 container.bind<Cloud115Controller>(TYPES.Cloud115Controller).to(Cloud115Controller);
 container.bind<QuarkController>(TYPES.QuarkController).to(QuarkController);

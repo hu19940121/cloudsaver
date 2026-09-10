@@ -37,6 +37,29 @@
               />
             </template>
           </van-cell>
+          <van-field
+            v-model="localGlobalSetting.jiaofuCookie"
+            :type="showJiaofuCookie ? 'text' : 'password'"
+            label="教父Cookie"
+            rows="2"
+            autosize
+            placeholder="请输入教父资源站Cookie"
+          >
+            <template #right-icon>
+              <van-icon
+                :name="showJiaofuCookie ? 'eye-o' : 'closed-eye'"
+                @click="showJiaofuCookie = !showJiaofuCookie"
+              />
+            </template>
+          </van-field>
+          <van-field
+            v-model="localGlobalSetting.teleChannels"
+            label="TG频道配置"
+            type="textarea"
+            rows="2"
+            autosize
+            placeholder='[{"id":"Quark_Movies","name":"夸克云盘影视资源频道"}]'
+          />
         </van-cell-group>
       </div>
     </div>
@@ -79,33 +102,6 @@
           </van-field>
         </van-cell-group>
       </div>
-
-      <!-- 帮助说明 -->
-      <div class="setting__help">
-        <div class="help__title">帮助说明</div>
-        <div class="help__links">
-          <van-cell
-            title="CloudSaver部署与使用常见问题"
-            is-link
-            url="https://www.yuque.com/xiaoruihenbangde/ggogn3/ga6gaaiy5fsyw62l?singleDoc=true"
-          />
-          <van-cell
-            title="CloudSaver功能介绍"
-            is-link
-            url="https://www.yuque.com/xiaoruihenbangde/ggogn3/cl2g0p9h3xrgfa5i"
-          />
-          <van-cell
-            title="如何获取115网盘cookie？"
-            is-link
-            url="https://alist.nn.ci/zh/guide/drivers/115.html"
-          />
-          <van-cell
-            title="如何获取夸克网盘cookie？"
-            is-link
-            url="https://alist.nn.ci/zh/guide/drivers/quark.html"
-          />
-        </div>
-      </div>
     </div>
 
     <!-- 保存按钮 -->
@@ -130,6 +126,8 @@ const localGlobalSetting = ref<GlobalSettingAttributes>({
   isProxyEnabled: false,
   AdminUserCode: 230713,
   CommonUserCode: 9527,
+  teleChannels: "",
+  jiaofuCookie: "",
 });
 
 const localUserSettings = ref<UserSettingAttributes>({
@@ -140,6 +138,7 @@ const localUserSettings = ref<UserSettingAttributes>({
 // 添加显示/隐藏密码的状态
 const showCloud115Cookie = ref(false);
 const showQuarkCookie = ref(false);
+const showJiaofuCookie = ref(false);
 
 // 监听 store 变化
 watch(
@@ -225,16 +224,6 @@ const handleProxyHostChange = (val: string) => {
     background: var(--theme-other_background);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
-  }
-
-  &__help {
-    margin-top: var(--spacing-base);
-
-    .help__title {
-      font-size: 14px; // 统一字体大小
-      margin-bottom: var(--spacing-sm);
-      color: var(--theme-color);
-    }
   }
 
   &__submit {

@@ -88,6 +88,76 @@
             </div>
           </div>
         </div>
+
+        <!-- Telegram搜索频道配置组 -->
+        <div class="settings-group">
+          <div class="group-header">
+            <h3>Telegram 搜索频道配置</h3>
+            <el-button type="primary" link size="small" @click="addChannel">
+              <el-icon><Plus /></el-icon> 添加频道
+            </el-button>
+          </div>
+          <div v-if="channelList.length === 0" class="empty-tip">
+            暂未配置 Telegram 频道，如需搜索 TG 资源请点击上方【添加频道】。
+          </div>
+          <div
+            v-for="(channel, index) in channelList"
+            :key="index"
+            class="form-row"
+            style="margin-bottom: 12px; align-items: center;"
+          >
+            <div class="form-item" style="flex: 1;">
+              <label>频道名称</label>
+              <el-input
+                v-model="channel.name"
+                placeholder="例如: 夸克云盘影视资源频道"
+                @input="syncChannels"
+              />
+            </div>
+            <div class="form-item" style="flex: 1;">
+              <label>频道用户名/ID</label>
+              <el-input
+                v-model="channel.id"
+                placeholder="例如: Quark_Movies"
+                @input="syncChannels"
+              />
+            </div>
+            <div style="padding-top: 24px;">
+              <el-button
+                type="danger"
+                circle
+                plain
+                @click="removeChannel(index)"
+              >
+                <el-icon><Delete /></el-icon>
+              </el-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 教父资源站配置组 -->
+        <div class="settings-group">
+          <div class="group-header">
+            <h3>教父资源站设置 (www.教父.com)</h3>
+          </div>
+          <div class="form-row">
+            <div class="form-item full-width">
+              <label for="jiaofuCookie">教父资源站 Cookie</label>
+              <el-input
+                id="jiaofuCookie"
+                v-model="localGlobalSetting.jiaofuCookie"
+                type="password"
+                show-password
+                placeholder="请输入教父资源站Cookie (包含 browser_verified, PHPSESSID, app_auth)"
+              >
+                <template #prefix>
+                  <el-icon><Lock /></el-icon>
+                </template>
+              </el-input>
+              <span class="field-tip">配置后可检索海量夸克/115网盘影视资源，系统会自动完成PoW防爬验证</span>
+            </div>
+          </div>
+        </div>
       </div>
     </el-card>
 
@@ -137,45 +207,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 帮助链接 -->
-        <div class="settings-help">
-          <h3>帮助文档</h3>
-          <div class="help-links">
-            <el-link
-              href="https://www.yuque.com/xiaoruihenbangde/ggogn3/ga6gaaiy5fsyw62l?singleDoc=true"
-              target="_blank"
-              type="primary"
-            >
-              <el-icon><QuestionFilled /></el-icon>
-              CloudSaver部署与使用常见问题
-            </el-link>
-            <el-link
-              href="https://www.yuque.com/xiaoruihenbangde/ggogn3/cl2g0p9h3xrgfa5i"
-              target="_blank"
-              type="primary"
-            >
-              <el-icon><QuestionFilled /></el-icon>
-              CloudSaver功能介绍
-            </el-link>
-            <el-link
-              href="https://alist.nn.ci/zh/guide/drivers/115.html#cookie获取方式"
-              target="_blank"
-              type="primary"
-            >
-              <el-icon><QuestionFilled /></el-icon>
-              如何获取115网盘Cookie？
-            </el-link>
-            <el-link
-              href="https://alist.nn.ci/zh/guide/drivers/quark.html#cookie"
-              target="_blank"
-              type="primary"
-            >
-              <el-icon><QuestionFilled /></el-icon>
-              如何获取夸克网盘Cookie？
-            </el-link>
-          </div>
-        </div>
       </div>
     </el-card>
 
@@ -198,7 +229,8 @@ import {
   Key,
   User,
   Lock,
-  QuestionFilled,
+  Plus,
+  Delete,
 } from "@element-plus/icons-vue";
 
 const settingStore = useUserSettingStore();
@@ -210,7 +242,26 @@ const localGlobalSetting = ref<GlobalSettingAttributes>({
   isProxyEnabled: false,
   AdminUserCode: 230713,
   CommonUserCode: 9527,
+  teleChannels: "",
+  jiaofuCookie: "",
 });
+
+const channelList = ref<{ id: string; name: string }[]>([]);
+
+const syncChannels = () => {
+  localGlobalSetting.value.teleChannels =
+    channelList.value.length > 0 ? JSON.stringify(channelList.value) : "";
+};
+
+const addChannel = () => {
+  channelList.value.push({ id: "", name: "" });
+  syncChannels();
+};
+
+const removeChannel = (index: number) => {
+  channelList.value.splice(index, 1);
+  syncChannels();
+};
 
 const localUserSettings = ref<UserSettingAttributes>({
   cloud115Cookie: "",
@@ -223,6 +274,16 @@ watch(
   (newVal) => {
     if (newVal) {
       localGlobalSetting.value = { ...newVal };
+      if (newVal.teleChannels) {
+        try {
+          const parsed = JSON.parse(newVal.teleChannels);
+          channelList.value = Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          channelList.value = [];
+        }
+      } else {
+        channelList.value = [];
+      }
     }
   },
   { immediate: true }
@@ -268,6 +329,7 @@ const handleProxyHostChange = (val: string) => {
 // 其他设置的保存
 const handleSave = async () => {
   try {
+    syncChannels();
     await settingStore.saveSettings({
       globalSetting: localGlobalSetting.value,
       userSettings: localUserSettings.value,
@@ -339,6 +401,12 @@ const handleSave = async () => {
     color: var(--theme-text-regular);
   }
 
+  .empty-tip {
+    font-size: 13px;
+    color: var(--theme-text-secondary);
+    padding: 12px 0;
+  }
+
   .group-header {
     @include flex-center;
     justify-content: space-between;
@@ -366,6 +434,13 @@ const handleSave = async () => {
 
   &.full-width {
     width: 100%;
+  }
+
+  .field-tip {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--theme-text-secondary);
   }
 
   label {
@@ -399,35 +474,6 @@ const handleSave = async () => {
         margin-right: 8px;
         color: var(--theme-text-secondary);
       }
-    }
-  }
-}
-
-.settings-help {
-  padding-top: 24px;
-  margin-top: 24px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-
-  .help-links {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-top: 16px;
-  }
-
-  :deep(.el-link) {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-
-    .el-icon {
-      font-size: 16px;
-    }
-
-    &:hover {
-      transform: translateX(4px);
     }
   }
 }

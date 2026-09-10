@@ -4,6 +4,8 @@ export interface GlobalSettingAttributes {
   isProxyEnabled: boolean;
   AdminUserCode: number;
   CommonUserCode: number;
+  teleChannels?: string;
+  jiaofuCookie?: string;
 }
 
 export interface UserSettingAttributes {

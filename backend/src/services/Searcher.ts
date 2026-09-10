@@ -5,7 +5,9 @@ import { GlobalSettingAttributes } from "../models/GlobalSetting";
 import * as cheerio from "cheerio";
 import { config } from "../config";
 import { logger } from "../utils/logger";
-import { injectable } from "inversify";
+import { injectable, inject, optional } from "inversify";
+import { TYPES } from "../core/types";
+import { JiaofuService } from "./JiaofuService";
 
 interface sourceItem {
   messageId?: string;
@@ -25,8 +27,10 @@ interface sourceItem {
 export class Searcher {
   private static instance: Searcher;
   private api: AxiosInstance | null = null;
+  private jiaofuService: JiaofuService;
 
-  constructor() {
+  constructor(@inject(TYPES.JiaofuService) @optional() jiaofuService?: JiaofuService) {
+    this.jiaofuService = jiaofuService || new JiaofuService();
     this.initAxiosInstance();
     Searcher.instance = this;
   }
@@ -63,6 +67,22 @@ export class Searcher {
 
   public static async updateAxiosInstance(): Promise<void> {
     await Searcher.instance.initAxiosInstance(true);
+    await Searcher.instance.jiaofuService.reloadConfig();
+  }
+
+  private async getTelegramChannels(): Promise<any[]> {
+    try {
+      const settings = await GlobalSetting.findOne();
+      if (settings?.teleChannels) {
+        const parsed = JSON.parse(settings.teleChannels);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return config.telegram.channels;
   }
 
   private extractCloudLinks(text: string): { links: string[]; cloudType: string } {
@@ -84,9 +104,45 @@ export class Searcher {
   async searchAll(keyword: string, channelId?: string, messageId?: string) {
     const allResults: any[] = [];
 
+    const currentChannels = await this.getTelegramChannels();
+    const isJiaofuConfigured = this.jiaofuService.isConfigured();
+    const isTelegramConfigured = currentChannels.length > 0;
+
+    // 若两个搜索源均未配置，向前端返回未配置状态与提示
+    if (!isJiaofuConfigured && !isTelegramConfigured) {
+      return {
+        data: [],
+        unconfigured: true,
+        message: "尚未配置搜索源，请前往【设置】添加 Telegram 频道或教父资源站 Cookie",
+      };
+    }
+
+    // 1. 如果配置了教父源，且未限定频道或指定了 jiaofu，则搜索教父资源站
+    const shouldSearchJiaofu = isJiaofuConfigured && (!channelId || channelId === "jiaofu");
+    const jiaofuPromise = shouldSearchJiaofu
+      ? this.jiaofuService
+          .search(keyword)
+          .then((result) => {
+            if (result && result.items.length > 0) {
+              allResults.push({
+                id: "jiaofu",
+                channelInfo: {
+                  id: "jiaofu",
+                  name: "教父影视（夸克云盘）",
+                  channelLogo: result.channelLogo,
+                },
+                list: result.items,
+              });
+            }
+          })
+          .catch((error) => {
+            logger.error("教父资源搜索异常:", error);
+          })
+      : Promise.resolve();
+
     const channelList: any[] = channelId
-      ? config.telegram.channels.filter((channel: any) => channel.id === channelId)
-      : config.telegram.channels;
+      ? currentChannels.filter((channel: any) => channel.id === channelId)
+      : currentChannels;
 
     // 使用Promise.all进行并行请求
     const searchPromises = channelList.map(async (channel) => {
@@ -121,7 +177,7 @@ export class Searcher {
     });
 
     // 等待所有请求完成
-    await Promise.all(searchPromises);
+    await Promise.all([jiaofuPromise, ...searchPromises]);
 
     return {
       data: allResults,

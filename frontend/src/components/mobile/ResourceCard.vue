@@ -9,7 +9,11 @@
             :src="getProxyImageUrl(item.image as string)"
             :fit="item.image ? 'cover' : 'contain'"
             lazy-load
-          />
+          >
+            <template #error>
+              <img :src="defaultImage" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.7;" />
+            </template>
+          </van-image>
           <!-- 来源标签移到图片左上角 -->
           <van-tag class="image__tag" :color="getTagColor(item.cloudType)" round>
             {{ item.cloudType }}
@@ -74,7 +78,7 @@ import { computed, ref } from "vue";
 import { useResourceStore } from "@/stores/resource";
 import { showNotify } from "vant";
 import type { ResourceItem } from "@/types";
-import { getProxyImageUrl } from "@/utils/image";
+import { getProxyImageUrl, defaultImage } from "@/utils/image";
 
 // Props 定义
 const props = defineProps<{

@@ -63,23 +63,30 @@ export class Cloud115Service implements ICloudStorageService {
     }
   }
 
-  async getShareInfo(shareCode: string, receiveCode = ""): Promise<ShareInfoResponse> {
+  async getShareInfo(
+    shareCode: string,
+    receiveCode = "",
+    pdirFid = "",
+    _stoken = ""
+  ): Promise<ShareInfoResponse> {
     const response = await this.api.get("/share/snap", {
       params: {
         share_code: shareCode,
         receive_code: receiveCode,
         offset: 0,
-        limit: 20,
-        cid: "",
+        limit: 50,
+        cid: pdirFid || "",
       },
     });
     if (response.data?.state && response.data.data?.list?.length > 0) {
       return {
         data: {
-          list: response.data.data.list.map((item: Cloud115ListItem) => ({
-            fileId: item.cid,
+          list: response.data.data.list.map((item: any) => ({
+            fileId: item.cid || item.fid,
             fileName: item.n,
-            fileSize: item.s,
+            fileSize: item.s || 0,
+            isDir: !item.s || item.s === 0,
+            pdirFid: pdirFid || "",
           })),
         },
       };

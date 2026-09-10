@@ -10,6 +10,8 @@ const DEFAULT_GLOBAL_SETTINGS = {
   isProxyEnabled: false,
   CommonUserCode: 9527,
   AdminUserCode: 230713,
+  teleChannels: "",
+  jiaofuCookie: "",
 };
 
 export class DatabaseService {
