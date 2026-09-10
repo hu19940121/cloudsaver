@@ -19,6 +19,7 @@ export const authMiddleware = async (
   if (
     req.path === "/user/login" ||
     req.path === "/user/register" ||
+    req.path === "/health" ||
     req.path.startsWith("/tele-images")
   ) {
     return next();

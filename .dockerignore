@@ -1,0 +1,13 @@
+.git
+.github
+.vscode
+node_modules
+**/node_modules
+**/dist
+data
+config
+*.sqlite
+*.log
+.env
+.env.local
+docs

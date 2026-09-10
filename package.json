@@ -2,6 +2,7 @@
   "name": "cloud-saver",
   "version": "0.2.5",
   "private": true,
+  "packageManager": "pnpm@9.15.4",
   "workspaces": [
     "frontend",
     "backend"

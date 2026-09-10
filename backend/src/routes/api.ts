@@ -24,6 +24,11 @@ const userController = container.get<UserController>(TYPES.UserController);
 const sponsorsController = container.get<SponsorsController>(TYPES.SponsorsController);
 const aiController = container.get<AIController>(TYPES.AIController);
 
+// 容器健康检查（无需登录）
+router.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 // 用户相关路由
 router.post("/user/login", (req, res) => userController.login(req, res));
 router.post("/user/register", (req, res) => userController.register(req, res));

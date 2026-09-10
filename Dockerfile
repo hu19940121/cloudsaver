@@ -1,55 +1,39 @@
-# 构建前端项目
-FROM node:18-alpine as frontend-build
-WORKDIR /app
-COPY frontend/package*.json ./
-RUN npm install -g pnpm
-RUN pnpm install
-COPY frontend/ ./
-RUN npm run build
+FROM node:20-alpine AS build
 
-# 构建后端项目
-FROM node:18-alpine as backend-build
-WORKDIR /app
-COPY backend/package*.json ./
-RUN npm install -g pnpm
-RUN pnpm install
-COPY backend/ ./
-RUN rm -f database.sqlite
-RUN npm run build
+WORKDIR /build
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY frontend/package.json ./frontend/package.json
+COPY backend/package.json ./backend/package.json
+RUN corepack enable && pnpm install --frozen-lockfile
 
-# 生产环境镜像
-FROM node:18-alpine
+COPY frontend/ ./frontend/
+COPY backend/ ./backend/
+RUN pnpm --filter cloud-saver-web build \
+    && pnpm --filter cloud-saver-server build
 
-# 安装 Nginx
+FROM node:20-alpine AS production
+
 RUN apk add --no-cache nginx
 
-# 设置工作目录
 WORKDIR /app
 
-# 创建配置和数据目录
-RUN mkdir -p /app/config /app/data
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY frontend/package.json ./frontend/package.json
+COPY backend/package.json ./backend/package.json
+RUN corepack enable \
+    && pnpm install --prod --frozen-lockfile --filter cloud-saver-server \
+    && pnpm store prune
 
-# 复制前端构建产物到 Nginx
-COPY --from=frontend-build /app/dist /usr/share/nginx/html
-
-# 复制 Nginx 配置文件
+COPY --from=build /build/backend/dist ./backend/dist
+COPY --from=build /build/backend/.env.example ./.env.example
+COPY --from=build /build/frontend/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
-# 复制后端构建产物到生产环境镜像
-COPY --from=backend-build /app /app
+RUN mkdir -p /app/config /app/data \
+    && chmod +x /app/docker-entrypoint.sh
 
-# 安装生产环境依赖
-RUN npm install --production
-
-# 设置数据卷
 VOLUME ["/app/config", "/app/data"]
-
-# 暴露端口
 EXPOSE 8008
 
-# 启动脚本
-COPY docker-entrypoint.sh /app/
-RUN chmod +x /app/docker-entrypoint.sh
-
-# 启动服务
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

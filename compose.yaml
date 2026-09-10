@@ -1,0 +1,28 @@
+name: cloudsaver
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cloudsaver:local
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${CLOUDSAVER_PORT:-8008}:8008"
+    environment:
+      NODE_ENV: production
+      PORT: 8009
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -O /dev/null http://127.0.0.1:8008/ && wget -q -O - http://127.0.0.1:8008/api/health | grep -q '"status":"ok"'
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

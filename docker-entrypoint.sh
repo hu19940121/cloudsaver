@@ -1,13 +1,16 @@
 #!/bin/sh
+set -eu
 
-# 如果配置目录下没有 env 文件，则复制示例文件
-if [ ! -f /app/config/env ]; then
-    cp /app/.env.example /app/config/env
-    echo "已创建默认配置文件 /app/config/env，请根据需要修改配置"
+config_file="/app/config/env"
+
+if [ ! -f "$config_file" ]; then
+    cp /app/.env.example "$config_file"
+    jwt_secret="$(head -c 48 /dev/urandom | base64 | tr -d '\n')"
+    sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$jwt_secret|" "$config_file"
+    echo "已创建默认配置文件 /app/config/env，并生成随机 JWT 密钥"
 fi
 
-# 创建配置文件软链接
-ln -sf /app/config/env /app/.env
+ln -sf "$config_file" /app/.env
 
-# 启动 Nginx 和后端服务
-nginx -g 'daemon off;' & npm run start 
+nginx
+exec node backend/dist/app.js

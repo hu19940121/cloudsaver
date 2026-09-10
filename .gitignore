@@ -10,6 +10,9 @@ dist/
 # 数据库数据
 *.sqlite
 
+# Docker 运行时配置（包含自动生成的 JWT 密钥）
+config/
+
 # 保留模板
 !.env.example
 
@@ -21,4 +24,4 @@ config.private.ts
 *.key
 
 .DS_Store
-*.log 
+*.log

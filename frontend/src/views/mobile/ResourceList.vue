@@ -377,19 +377,6 @@ onBeforeUnmount(() => {
       background: #3b82f6;
     }
   }
-      padding: 0 20px;
-      height: 44px;
-      line-height: 44px;
-    }
-
-    :deep(.van-tabs__line) {
-      background: var(--theme-theme);
-    }
-
-    :deep(.van-tabs__content) {
-      padding: 8px 0;
-    }
-  }
 }
 
 .save-popup {
