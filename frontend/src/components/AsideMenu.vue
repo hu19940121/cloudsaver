@@ -2,7 +2,6 @@
   <div class="pc-aside">
     <!-- Logo 区域 -->
     <div class="pc-aside__logo">
-      <img :src="logo" alt="Cloud Saver Logo" class="logo__image" />
       <h1 class="logo__title">Cloud Saver</h1>
     </div>
 
@@ -49,7 +48,6 @@
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Search, Film, Setting } from "@element-plus/icons-vue";
-import logo from "@/assets/images/logo.png";
 
 // 类型定义
 interface MenuItem {
@@ -149,21 +147,16 @@ const handleMenuClick = (menu: MenuItem) => {
 
   // Logo 区域
   &__logo {
-    @include flex-center;
-    padding: 24px 16px;
-    gap: 12px;
-
-    .logo__image {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-    }
+    display: flex;
+    align-items: center;
+    padding: 24px 20px 18px;
 
     .logo__title {
       margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--theme-text-primary);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--theme-text-primary, #1d2129);
       @include text-overflow;
     }
   }

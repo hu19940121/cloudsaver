@@ -7,7 +7,6 @@
     <main class="login__content">
       <!-- 头部 Logo -->
       <header class="login__header">
-        <img :src="logo" alt="Cloud Saver Logo" class="login__logo" width="60" height="60" />
         <h1 class="login__title">Cloud Saver</h1>
       </header>
 
@@ -155,7 +154,6 @@ import { useRouter } from "vue-router";
 import { showNotify } from "vant";
 import type { FieldInstance, FieldRule } from "vant";
 import { userApi } from "@/api/user";
-import logo from "@/assets/images/logo.png";
 import { STORAGE_KEYS } from "@/constants/storage";
 
 // 类型定义
