@@ -1,65 +1,7 @@
 # CloudSaver
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Vue](https://img.shields.io/badge/vue-3.x-brightgreen.svg)
-![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
-[![GitHub Stars](https://img.shields.io/github/stars/jiangrui1994/CloudSaver.svg?style=flat&logo=github)](https://github.com/jiangrui1994/CloudSaver/stargazers)
-![Docker](https://img.shields.io/docker/pulls/jiangrui1994/cloudsaver.svg)
-<a href="https://hellogithub.com/repository/d13663fb959345e7923ecaccc3387571" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=d13663fb959345e7923ecaccc3387571&claim_uid=xP1MT4mSvN6wn5K&theme=small" alt="Featured｜HelloGitHub" /></a>
 
 一个基于 Vue 3 + Express 的网盘资源搜索与转存工具，支持响应式布局，移动端与PC完美适配，可通过 Docker 一键部署。
-
-官方Telegram群组：[https://t.me/+4fWSSbQn5rMxYjM1](https://t.me/+4fWSSbQn5rMxYjM1)
-
-官方QQ交流群（[群地址](https://www.yuque.com/xiaoruihenbangde/ggogn3/ga6gaaiy5fsyw62l#lsPla))
-
-版本更新日志：[https://www.yuque.com/xiaoruihenbangde/ggogn3/vxoqxkx4rkcz3g94](https://www.yuque.com/xiaoruihenbangde/ggogn3/vxoqxkx4rkcz3g94)
-
-CloudSaver部署与使用常见问题(包含更多搜索频道)：[https://www.yuque.com/xiaoruihenbangde/ggogn3/ga6gaaiy5fsyw62l](https://www.yuque.com/xiaoruihenbangde/ggogn3/ga6gaaiy5fsyw62l)
-密码 me16 点个Star呗~
-
-⚠️关于项目更新与需求处理的核心声明：[https://www.yuque.com/xiaoruihenbangde/ggogn3/gt9cgqn2n3vergxx](https://www.yuque.com/xiaoruihenbangde/ggogn3/gt9cgqn2n3vergxx)
-
----
-
-⚠️**由于某些原因，[新版本](https://www.yuque.com/xiaoruihenbangde/ggogn3/vxoqxkx4rkcz3g94)内容不包含在此开源仓库(停留在V0.2.5版本)，如需使用，请使用docker镜像进行部署使用。**
-
----
-
-**🔒 重要安全提醒｜关于本项目私有化部署的强制建议**
-
-为保障您的数据安全与隐私权益，请务必**通过Docker自行私有化部署本项目**。我们**强烈反对**使用任何第三方提供的在线网站或他人部署的服务，原因如下：
-
-⚠️ **高风险预警**
-
-- 本项目涉及**网盘Cookie等敏感凭据**，若使用他人服务：  
-  ▶ 您的账号密码、隐私文件可能遭恶意窃取或篡改  
-  ▶ 攻击者可利用Cookie直接登录您的网盘实施破坏  
-  ▶ 数据泄露、资产损失等后果需完全由使用者自行承担
-
-🚫 **严正声明**
-
-1. 本项目**从未且不会**提供任何形式的在线服务、公开Demo或托管平台
-2. **任何声称与本项目相关的在线网站均为未授权第三方搭建**，存在蓄意作恶的高风险
-3. 如因使用非自建服务导致损失，本项目开发者**不承担任何法律责任**
-
-❓ **常见问题**  
-Q: 是否有在线Demo可直接试用？  
-A: **绝无可能！** 任何在线服务都与本项目无关，请立即关闭避免信息泄露
-
-Q: 为何不能使用他人部署好的服务？  
-A: Cookie等同于账号密码，交出Cookie=交出家门钥匙，请勿将身家安全托付陌生人
-
-Q: 如何确保100%安全？  
-A: 唯一可信方案：通过官方仓库代码+自主服务器部署，全程数据闭环
-
----
-
-**🛡️ 最后一次严肃提醒**  
-您的账号安全只应掌握在自己手中！  
-请立即执行私有化部署 ▶ 避免无法挽回的数据灾难
-
----
 
 ## 功能特性
 
@@ -198,40 +140,7 @@ pnpm build
 pnpm start
 ```
 
-### Docker 部署
 
-说明：镜像源有**两个地址**供选择，下面部署命令中使用的是dockerhub托管的地址为例，github托管的地址请自行替换
-
-- dockerhub托管：
-  - `jiangrui1994/cloudsaver:latest` 稳定版
-  - `jiangrui1994/cloudsaver:test` 测试版 （包含最新功能和bug修复，但可能不如稳定版稳定）
-- github托管：
-  - `ghcr.io/jiangrui1994/cloudsaver:latest` 稳定版
-  - `ghcr.io/jiangrui1994/cloudsaver:test` 测试版 （包含最新功能和bug修复，但可能不如稳定版稳定）
-
-#### 单容器部署
-
-稳定版：
-
-```bash
-docker run -d \
-  -p 8008:8008 \
-  -v /your/local/path/data:/app/data \
-  -v /your/local/path/config:/app/config \
-  --name cloud-saver \
-  jiangrui1994/cloudsaver:latest
-```
-
-测试版（包含最新功能和bug修复，但可能不如稳定版稳定）：
-
-```bash
-docker run -d \
-  -p 8008:8008 \
-  -v /your/local/path/data:/app/data \
-  -v /your/local/path/config:/app/config \
-  --name cloud-saver \
-  jiangrui1994/cloudsaver:test
-```
 
 #### Docker Compose 部署
 
