@@ -69,7 +69,7 @@ const handleScroll = throttle(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/common.scss";
+@use "@/styles/common.scss" as *;
 
 .pc-home {
   position: relative;

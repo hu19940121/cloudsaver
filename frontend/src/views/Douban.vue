@@ -69,8 +69,8 @@ const searchMovie = (title: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/common.scss";
-@import "@/styles/responsive.scss";
+@use "@/styles/common.scss" as *;
+@use "@/styles/responsive.scss" as *;
 
 .douban-page {
   height: calc(100vh - 180px);

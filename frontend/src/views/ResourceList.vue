@@ -278,8 +278,8 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/common.scss";
-@import "@/styles/responsive.scss";
+@use "@/styles/common.scss" as *;
+@use "@/styles/responsive.scss" as *;
 
 .pc-resources {
   // 整体容器

@@ -342,7 +342,7 @@ const handleSave = async () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/common.scss";
+@use "@/styles/common.scss" as *;
 
 .settings-page {
   // max-width: 1000px;

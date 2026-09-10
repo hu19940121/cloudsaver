@@ -1,4 +1,5 @@
 // filepath: /d:/code/CloudDiskDown/backend/src/app.ts
+import "./polyfill";
 import "./types/express";
 import express from "express";
 import { container } from "./inversify.config";

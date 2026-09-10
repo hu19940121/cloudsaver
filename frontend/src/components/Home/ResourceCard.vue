@@ -227,7 +227,7 @@ const handleLoadMore = (channelId: string) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/common.scss";
+@use "@/styles/common.scss" as *;
 
 .resource-card {
   position: relative;

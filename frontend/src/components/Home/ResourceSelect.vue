@@ -347,7 +347,7 @@ const cancelEdit = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/responsive.scss";
+@use "@/styles/responsive.scss" as *;
 
 .resource-select {
   min-height: 280px;

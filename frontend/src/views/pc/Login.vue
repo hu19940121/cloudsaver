@@ -232,7 +232,7 @@ const handleRegister = async () => {
 </script>
 
 <style scoped lang="scss">
-@import "@/styles/common.scss";
+@use "@/styles/common.scss" as *;
 
 .login-page {
   @include flex-center;

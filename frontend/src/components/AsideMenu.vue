@@ -140,7 +140,7 @@ const handleMenuClick = (menu: MenuItem) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/common.scss";
+@use "@/styles/common.scss" as *;
 
 .pc-aside {
   height: 100%;
