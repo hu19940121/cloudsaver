@@ -166,21 +166,23 @@ const toggleExpand = (id: string) => {
 }
 
 .resource-card {
-  padding: 5px 10px;
+  padding: 8px 10px;
 
   &__item {
     margin-bottom: 12px;
-    background: var(--theme-other_background);
-    border-radius: var(--border-radius-lg);
+    background: rgba(22, 28, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   }
 }
 
 .item {
   &__content {
     display: flex;
-    gap: 16px;
-    padding: 16px;
+    gap: 12px;
+    padding: 12px;
   }
 }
 
@@ -188,11 +190,11 @@ const toggleExpand = (id: string) => {
   &__image {
     position: relative; // 为标签定位
     flex-shrink: 0;
-    width: 100px;
-    height: 140px;
-    border-radius: var(--border-radius-sm);
+    width: 78px;
+    height: 104px;
+    border-radius: 8px;
     overflow: hidden;
-    background: var(--van-gray-2);
+    background: #0f131c;
 
     :deep(.van-image) {
       width: 100%;
@@ -201,10 +203,11 @@ const toggleExpand = (id: string) => {
 
     .image__tag {
       position: absolute;
-      top: 8px;
-      left: 8px;
+      top: 6px;
+      left: 6px;
       font-size: 10px;
-      padding: 0 6px;
+      padding: 0 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     }
   }
 
@@ -213,35 +216,36 @@ const toggleExpand = (id: string) => {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: 6px;
   }
 }
 
 .info {
   &__title {
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
     line-height: 1.4;
-    color: var(--theme-color);
+    color: #f8fafc;
     @include text-ellipsis(2);
 
     &:active {
-      opacity: 0.7;
+      opacity: 0.8;
+      color: #3b82f6;
     }
   }
 
   &__desc {
     position: relative;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--van-gray-7);
-    @include text-ellipsis(3);
-    margin: 4px 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #94a3b8;
+    @include text-ellipsis(2);
+    margin: 2px 0;
     cursor: pointer;
     transition: all 0.3s;
 
     &.is-expanded {
-      -webkit-line-clamp: 8;
+      -webkit-line-clamp: 6;
     }
 
     &::after {
@@ -250,9 +254,9 @@ const toggleExpand = (id: string) => {
       right: 0;
       bottom: 0;
       padding: 0 4px;
-      font-size: 12px;
-      color: var(--theme-theme);
-      background: var(--theme-other_background);
+      font-size: 11px;
+      color: #3b82f6;
+      background: #161c2a;
     }
 
     &.is-expanded::after {

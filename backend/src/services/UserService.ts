@@ -15,11 +15,16 @@ export class UserService {
 
   async register(username: string, password: string, registerCode: string) {
     const globalSetting = await GlobalSetting.findOne();
-    const registerCodeList = [
-      globalSetting?.dataValues.CommonUserCode,
-      globalSetting?.dataValues.AdminUserCode,
-    ];
-    if (!registerCode || !registerCodeList.includes(Number(registerCode))) {
+    const commonCode = String(globalSetting?.dataValues.CommonUserCode ?? "5549").trim();
+    const adminCode = String(globalSetting?.dataValues.AdminUserCode ?? "012101").trim();
+    const inputCode = String(registerCode || "").trim();
+
+    let role = -1;
+    if (inputCode === commonCode || Number(inputCode) === Number(commonCode)) {
+      role = 0;
+    } else if (inputCode === adminCode || Number(inputCode) === Number(adminCode)) {
+      role = 1;
+    } else {
       throw new Error("注册码错误");
     }
 
@@ -35,7 +40,6 @@ export class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = registerCodeList.findIndex((x) => x === Number(registerCode));
     const user = await User.create({ username, password: hashedPassword, role });
 
     return {

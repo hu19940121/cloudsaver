@@ -6,8 +6,8 @@ export interface GlobalSettingAttributes {
   httpProxyHost: string;
   httpProxyPort: number;
   isProxyEnabled: boolean;
-  CommonUserCode: number;
-  AdminUserCode: number;
+  CommonUserCode: number | string;
+  AdminUserCode: number | string;
   teleChannels?: string;
   jiaofuCookie?: string;
 }
@@ -22,8 +22,8 @@ class GlobalSetting
   public httpProxyHost!: string;
   public httpProxyPort!: number;
   public isProxyEnabled!: boolean;
-  public CommonUserCode!: number;
-  public AdminUserCode!: number;
+  public CommonUserCode!: number | string;
+  public AdminUserCode!: number | string;
   public teleChannels?: string;
   public jiaofuCookie?: string;
 }
@@ -51,14 +51,14 @@ GlobalSetting.init(
       defaultValue: true,
     },
     CommonUserCode: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: 9527,
+      defaultValue: "5549",
     },
     AdminUserCode: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 230713,
+      defaultValue: "012101",
     },
     teleChannels: {
       type: DataTypes.TEXT,

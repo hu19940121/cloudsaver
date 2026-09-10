@@ -5,44 +5,37 @@
 </template>
 
 <style>
-#app {
-  height: 100vh;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
 :root {
-  --theme-color: #3e3e3e;
-  --theme-theme: #133ab3;
-  --theme-background: #fafafa;
-  --theme-other_background: #ffffff;
+  --theme-color: #f8fafc;
+  --theme-theme: #3b82f6;
+  --theme-background: #0c0f17;
+  --theme-other_background: #141924;
 }
+
 html,
 body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100%;
+  overflow-x: hidden;
   font-size: 15px;
-  font-family:
-    v-sans,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    sans-serif,
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    Segoe UI Symbol;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
-  color: var(--theme-color);
-  background-color: var(--theme-background);
+  color: #f8fafc;
+  background-color: #0c0f17;
   word-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  position: fixed;
+#app {
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  max-width: 100vw;
+  min-height: 100vh;
+  background-color: #0c0f17;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* 移动端全局样式 */
@@ -52,22 +45,20 @@ body {
     overflow-x: hidden;
   }
 
-  /* 统一按钮样式 */
   .van-button {
-    height: 40px;
-    font-size: var(--font-size-base);
-    border-radius: var(--border-radius-base);
+    height: 38px;
+    font-size: 13px;
+    border-radius: 8px;
   }
 
-  /* 统一输入框样式 */
   .van-field {
-    font-size: var(--font-size-base);
+    font-size: 14px;
+    background: transparent;
   }
 
-  /* 统一卡片样式 */
   .van-card {
-    border-radius: var(--border-radius-base);
-    margin: var(--spacing-base) 0;
+    border-radius: 10px;
+    margin: 8px 0;
   }
 }
 </style>

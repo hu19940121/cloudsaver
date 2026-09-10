@@ -211,15 +211,15 @@ const searchMovieforTag = (tag: string) => {
 }
 
 .channel-section {
-  background: var(--theme-card-bg, #ffffff);
+  background: rgba(18, 23, 34, 0.85);
   border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   transition: box-shadow 0.3s ease;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -227,15 +227,15 @@ const searchMovieforTag = (tag: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  background: rgba(248, 249, 252, 0.7);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 14px 20px;
+  background: rgba(26, 33, 48, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(240, 244, 250, 0.85);
+    background: rgba(32, 41, 60, 0.75);
   }
 
   &.is-collapsed {
@@ -251,8 +251,8 @@ const searchMovieforTag = (tag: string) => {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      border: 2px solid #ffffff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       flex-shrink: 0;
 
       .channel-avatar-placeholder {
@@ -261,8 +261,8 @@ const searchMovieforTag = (tag: string) => {
         justify-content: center;
         width: 100%;
         height: 100%;
-        background: #e4e7ed;
-        color: #909399;
+        background: #1e293b;
+        color: #64748b;
       }
     }
 
@@ -272,15 +272,18 @@ const searchMovieforTag = (tag: string) => {
       gap: 10px;
 
       .channel-name {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        color: var(--theme-text-primary, #1d2129);
+        color: #f8fafc;
       }
 
       .count-badge {
         font-size: 11px;
         border-radius: 10px;
         font-weight: 500;
+        background: rgba(255, 255, 255, 0.06);
+        color: #94a3b8;
+        border: none;
       }
     }
   }
@@ -288,24 +291,24 @@ const searchMovieforTag = (tag: string) => {
   .channel-actions {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
 
     .tg-link {
       font-size: 13px;
-      color: #909399;
+      color: #64748b;
       display: flex;
       align-items: center;
       gap: 4px;
       transition: color 0.2s;
 
       &:hover {
-        color: var(--theme-primary, #409eff);
+        color: var(--theme-primary, #3b82f6);
       }
     }
 
     .expand-icon {
       font-size: 16px;
-      color: #909399;
+      color: #64748b;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       &.is-active {
@@ -322,7 +325,7 @@ const searchMovieforTag = (tag: string) => {
 .empty-tip {
   padding: 40px;
   text-align: center;
-  color: #909399;
+  color: #64748b;
   font-size: 14px;
 }
 
@@ -338,15 +341,16 @@ const searchMovieforTag = (tag: string) => {
   gap: 18px;
   padding: 14px 16px;
   border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  background: rgba(22, 28, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
   transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
 
   &:hover {
-    background: #fbfcfe;
-    border-color: rgba(64, 158, 255, 0.25);
+    background: rgba(28, 36, 54, 0.98);
+    border-color: rgba(59, 130, 246, 0.35);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 
     .media-poster .poster-overlay {
       opacity: 1;
@@ -361,7 +365,8 @@ const searchMovieforTag = (tag: string) => {
     position: relative;
     cursor: pointer;
     flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    background: #0f131c;
 
     .poster-img {
       width: 100%;
@@ -379,11 +384,11 @@ const searchMovieforTag = (tag: string) => {
       justify-content: center;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #f0f2f5, #e4e7ed);
+      background: linear-gradient(135deg, #111520, #192030);
 
       .fallback-img {
         width: 60%;
-        opacity: 0.6;
+        opacity: 0.5;
       }
     }
 
@@ -393,7 +398,7 @@ const searchMovieforTag = (tag: string) => {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.4);
       color: #ffffff;
       display: flex;
       align-items: center;
@@ -426,7 +431,7 @@ const searchMovieforTag = (tag: string) => {
       .media-title {
         font-size: 15px;
         font-weight: 600;
-        color: #1f2329;
+        color: #f8fafc;
         text-decoration: none;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -434,14 +439,14 @@ const searchMovieforTag = (tag: string) => {
         transition: color 0.2s;
 
         &:hover {
-          color: var(--theme-primary, #409eff);
+          color: var(--theme-primary, #3b82f6);
         }
       }
     }
 
     .media-desc {
       font-size: 13px;
-      color: #606266;
+      color: #94a3b8;
       line-height: 1.55;
       display: -webkit-box;
       -webkit-box-orient: vertical;
@@ -476,15 +481,16 @@ const searchMovieforTag = (tag: string) => {
 
         .tag-chip {
           font-size: 11px;
-          color: #409eff;
-          background: rgba(64, 158, 255, 0.08);
+          color: #60a5fa;
+          background: rgba(59, 130, 246, 0.12);
+          border: 1px solid rgba(59, 130, 246, 0.2);
           padding: 2px 8px;
           border-radius: 6px;
           cursor: pointer;
           transition: all 0.2s ease;
 
           &:hover {
-            background: #409eff;
+            background: #3b82f6;
             color: #ffffff;
             transform: translateY(-1px);
           }
@@ -493,7 +499,7 @@ const searchMovieforTag = (tag: string) => {
 
       .no-tag-tip {
         font-size: 11px;
-        color: #c0c4cc;
+        color: #64748b;
       }
     }
   }
@@ -509,12 +515,15 @@ const searchMovieforTag = (tag: string) => {
       font-weight: 600;
       border-radius: 8px;
       padding: 8px 16px;
-      box-shadow: 0 3px 10px rgba(64, 158, 255, 0.25);
+      border: none;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      box-shadow: 0 3px 12px rgba(59, 130, 246, 0.35);
       transition: all 0.2s ease;
 
       &:hover {
         transform: translateY(-1px);
-        box-shadow: 0 5px 14px rgba(64, 158, 255, 0.35);
+        background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+        box-shadow: 0 5px 16px rgba(59, 130, 246, 0.5);
       }
     }
 
@@ -522,12 +531,57 @@ const searchMovieforTag = (tag: string) => {
       border-radius: 8px;
       padding: 8px 14px;
       font-size: 12px;
-      color: #606266;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
 
       &:hover {
-        color: var(--theme-primary, #409eff);
-        border-color: var(--theme-primary, #409eff);
-        background: rgba(64, 158, 255, 0.04);
+        color: #f8fafc;
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.09);
+      }
+    }
+  }
+}
+
+// 移动端响应式适配
+@media screen and (max-width: 768px) {
+  .channel-section {
+    border-radius: 12px;
+  }
+
+  .channel-header {
+    padding: 10px 14px;
+
+    .channel-info .channel-meta .channel-name {
+      font-size: 14px;
+    }
+  }
+
+  .channel-body {
+    padding: 10px;
+  }
+
+  .media-item {
+    padding: 10px 12px;
+    gap: 12px;
+
+    .media-poster {
+      width: 65px;
+      height: 88px;
+    }
+
+    .media-content .content-top .media-title {
+      font-size: 14px;
+    }
+
+    .media-actions {
+      margin-left: 6px;
+
+      .save-btn,
+      .link-btn {
+        padding: 5px 10px;
+        font-size: 11px;
       }
     }
   }

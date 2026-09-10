@@ -59,32 +59,28 @@
           <div class="form-row">
             <div class="form-item">
               <label for="AdminUserCode">管理员注册码</label>
-              <el-input-number
+              <el-input
                 id="AdminUserCode"
                 v-model="localGlobalSetting.AdminUserCode"
-                :controls="false"
-                :precision="0"
-                placeholder="设置管理员注册码"
+                placeholder="请输入管理员注册码"
               >
                 <template #prefix>
                   <el-icon><Key /></el-icon>
                 </template>
-              </el-input-number>
+              </el-input>
             </div>
 
             <div class="form-item">
               <label for="CommonUserCode">普通用户注册码</label>
-              <el-input-number
+              <el-input
                 id="CommonUserCode"
                 v-model="localGlobalSetting.CommonUserCode"
-                :controls="false"
-                :precision="0"
-                placeholder="设置普通用户注册码"
+                placeholder="请输入普通用户注册码"
               >
                 <template #prefix>
                   <el-icon><Key /></el-icon>
                 </template>
-              </el-input-number>
+              </el-input>
             </div>
           </div>
         </div>
@@ -341,8 +337,8 @@ const localGlobalSetting = ref<GlobalSettingAttributes>({
   httpProxyHost: "127.0.0.1",
   httpProxyPort: "7890",
   isProxyEnabled: false,
-  AdminUserCode: 230713,
-  CommonUserCode: 9527,
+  AdminUserCode: "012101",
+  CommonUserCode: "5549",
   teleChannels: "",
   jiaofuCookie: "",
 });
@@ -449,72 +445,81 @@ const handleSave = async () => {
 @use "@/styles/common.scss" as *;
 
 .settings-page {
-  // max-width: 1000px;
-  margin: 0;
-  padding-bottom: 40px;
+  max-width: 880px;
+  margin: 0 auto;
+  padding-bottom: 36px;
 }
 
 .settings-card {
-  margin-bottom: 24px;
-  border-radius: var(--theme-radius);
-  transition: var(--theme-transition);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 16px;
+  border-radius: 14px;
+  background: rgba(20, 25, 36, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
 
   &:hover {
-    box-shadow: var(--theme-shadow);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   :deep(.el-card__header) {
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 }
 
 .card-header {
-  @include flex-center;
-  gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
   .el-icon {
-    font-size: 20px;
-    color: var(--theme-primary);
+    font-size: 18px;
+    color: var(--theme-primary, #3b82f6);
   }
 
   h2 {
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    color: var(--theme-text-primary);
+    color: #f8fafc;
+    letter-spacing: -0.2px;
   }
 }
 
 .settings-section {
-  padding: 20px;
+  padding: 16px 18px;
 }
 
 .settings-group {
-  margin-bottom: 32px;
+  margin-bottom: 18px;
 
   &:last-child {
     margin-bottom: 0;
   }
 
   h3 {
-    margin: 0 0 16px;
-    font-size: 14px;
+    margin: 0 0 12px;
+    font-size: 13px;
     font-weight: 600;
-    color: var(--theme-text-regular);
+    color: #e2e8f0;
   }
 
   .empty-tip {
-    font-size: 13px;
-    color: var(--theme-text-secondary);
-    padding: 12px 0;
+    font-size: 12px;
+    color: #64748b;
+    padding: 8px 0;
   }
 
   .group-header {
-    @include flex-center;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 
     h3 {
       margin: 0;
@@ -524,8 +529,8 @@ const handleSave = async () => {
 
 .form-row {
   display: flex;
-  gap: 24px;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 12px;
 
   &:last-child {
     margin-bottom: 0;
@@ -542,16 +547,18 @@ const handleSave = async () => {
 
   .field-tip {
     display: block;
-    margin-top: 6px;
-    font-size: 12px;
-    color: var(--theme-text-secondary);
+    margin-top: 4px;
+    font-size: 11px;
+    color: #64748b;
+    line-height: 1.4;
   }
 
   label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 13px;
-    color: var(--theme-text-secondary);
+    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
   }
 
   :deep(.el-input),
@@ -559,24 +566,37 @@ const handleSave = async () => {
     width: 100%;
 
     .el-input__wrapper {
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-      transition: var(--theme-transition);
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      padding: 2px 12px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transition: all 0.25s ease;
 
       &:hover {
-        box-shadow: 0 0 0 1px var(--theme-primary);
+        background: rgba(255, 255, 255, 0.07);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
       }
 
       &.is-focus {
-        box-shadow:
-          0 0 0 1px var(--theme-primary),
-          0 0 0 3px rgba(0, 102, 204, 0.1);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 0 1px #3b82f6, 0 0 0 3px rgba(59, 130, 246, 0.2);
+      }
+    }
+
+    .el-input__inner {
+      color: #f8fafc;
+      font-size: 13px;
+      height: 36px;
+
+      &::placeholder {
+        color: #475569;
       }
     }
 
     .el-input__prefix-inner {
       .el-icon {
-        margin-right: 8px;
-        color: var(--theme-text-secondary);
+        margin-right: 6px;
+        color: #64748b;
       }
     }
   }
@@ -585,24 +605,40 @@ const handleSave = async () => {
 .settings-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 24px;
+  margin-top: 20px;
 
   .el-button {
-    min-width: 120px;
+    min-width: 130px;
     height: 40px;
-    border-radius: 20px;
+    border-radius: 10px;
     font-size: 14px;
-    transition: var(--theme-transition);
-
-    .el-icon {
-      margin-right: 6px;
-      font-size: 16px;
-    }
+    font-weight: 600;
+    border: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+    color: #ffffff;
+    transition: all 0.25s ease;
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--theme-shadow-sm);
+      background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+      transform: translateY(-1px);
     }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .settings-page {
+    padding: 0 8px 95px !important; // 预留安全距离，杜绝底部保存按钮被移动端底部导航遮挡
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .settings-section {
+    padding: 12px 14px;
   }
 }
 </style>

@@ -21,6 +21,9 @@
             lazy
             :alt="movie.title"
           >
+            <template #placeholder>
+              <div class="poster-skeleton"></div>
+            </template>
             <template #error>
               <div class="poster-error">
                 <el-image :src="defaultImage" fit="contain" class="fallback-img" />
@@ -282,7 +285,7 @@ const searchMovie = (title: string) => {
       gap: 4px;
       font-size: 14px;
       font-weight: 600;
-      color: var(--theme-text-primary, #1d2129);
+      color: #f8fafc;
       text-decoration: none;
       line-height: 1.4;
       overflow: hidden;
@@ -293,7 +296,7 @@ const searchMovie = (title: string) => {
 
       .external-icon {
         font-size: 11px;
-        color: #c0c4cc;
+        color: #64748b;
         opacity: 0;
         transition: all 0.2s;
       }
@@ -301,8 +304,85 @@ const searchMovie = (title: string) => {
       &:hover {
         .external-icon {
           opacity: 1;
-          color: var(--theme-primary, #409eff);
+          color: var(--theme-primary, #3b82f6);
         }
+      }
+    }
+  }
+}
+
+// 图片加载底色与骨架屏，杜绝刷新时闪烁白块
+:deep(.el-image) {
+  background: #151922 !important;
+  width: 100%;
+  height: 100%;
+}
+
+:deep(.el-image__placeholder) {
+  background: #151922 !important;
+}
+
+:deep(.el-image__inner) {
+  background: #151922 !important;
+}
+
+.poster-skeleton {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #151922 25%, #222a3a 50%, #151922 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// 移动端响应式适配
+@media screen and (max-width: 768px) {
+  .douban-page {
+    padding: 6px 6px 95px !important; // 预留 95px，避免底部被导航遮挡
+    height: auto !important;
+    overflow-y: visible !important;
+  }
+
+  .movie-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    gap: 12px 10px;
+  }
+
+  .movie-card {
+    .poster-container {
+      border-radius: 8px;
+
+      .rate-badge {
+        top: 5px;
+        right: 5px;
+        padding: 1px 5px;
+        font-size: 10px;
+        .star-icon {
+          font-size: 9px;
+        }
+        .rate-num {
+          font-size: 10px;
+        }
+      }
+
+      .poster-hover-overlay .search-action-pill {
+        padding: 4px 10px;
+        font-size: 11px;
+      }
+    }
+
+    .movie-meta {
+      padding: 6px 2px 0;
+      .movie-title {
+        font-size: 12px;
       }
     }
   }

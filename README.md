@@ -144,39 +144,9 @@ pnpm start
 
 #### Docker Compose 部署
 
-创建 `docker-compose.yml` 文件：
 
-稳定版：
 
-```yaml
-version: "3"
-services:
-  cloudsaver:
-    image: jiangrui1994/cloudsaver:latest
-    container_name: cloud-saver
-    ports:
-      - "8008:8008"
-    volumes:
-      - /your/local/path/data:/app/data
-      - /your/local/path/config:/app/config
-    restart: unless-stopped
-```
 
-测试版：
-
-```yaml
-version: "3"
-services:
-  cloudsaver:
-    image: jiangrui1994/cloudsaver:test
-    container_name: cloud-saver
-    ports:
-      - "8008:8008"
-    volumes:
-      - /your/local/path/data:/app/data
-      - /your/local/path/config:/app/config
-    restart: unless-stopped
-```
 
 #### /app/config 目录说明
 
@@ -189,8 +159,6 @@ JWT_SECRET=your_jwt_secret_here
 # Telegram配置
 TELEGRAM_BASE_URL=https://t.me/s
 
-# Telegram频道配置(0.3.0及之后版本无效)
-TELE_CHANNELS=[{"id":"xxxx","name":"xxxx资源分享"}]
 ```
 
 运行：
@@ -205,5 +173,5 @@ docker-compose up -d
 
 1. 资源搜索需要配置代理环境
 2. 默认注册码
-   - 管理员：230713
-   - 普通用户：9527
+   - 管理员：012101
+   - 普通用户：5549

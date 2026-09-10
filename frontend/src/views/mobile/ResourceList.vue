@@ -302,21 +302,23 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 .resource-list {
   min-height: 100%;
-  background: var(--van-background);
+  background: #0c0f17;
   padding-bottom: 20px;
 
   &__header {
     margin-bottom: 8px;
-    background: var(--theme-other_background);
+    background: rgba(20, 25, 36, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
     :deep(.van-cell) {
-      padding: 12px 16px;
+      padding: 10px 14px;
       min-height: 24px;
+      background: transparent;
     }
 
     .header__icon {
-      font-size: 30px;
-      color: var(--theme-theme);
+      font-size: 26px;
+      color: #3b82f6;
       margin-right: 10px;
       line-height: 1;
     }
@@ -327,15 +329,16 @@ onBeforeUnmount(() => {
       gap: 6px;
 
       .content__title {
-        font-size: 15px;
-        font-weight: 500;
+        font-size: 14px;
+        font-weight: 600;
+        color: #f8fafc;
         line-height: 1.4;
       }
 
       .content__tip {
-        font-size: 12px;
-        color: var(--van-gray-6);
-        background: var(--van-gray-1);
+        font-size: 11px;
+        color: #64748b;
+        background: rgba(255, 255, 255, 0.06);
         padding: 2px 6px;
         border-radius: 4px;
         line-height: 1.4;
@@ -343,8 +346,8 @@ onBeforeUnmount(() => {
     }
 
     .header__time {
-      font-size: 12px;
-      color: var(--van-gray-6);
+      font-size: 11px;
+      color: #64748b;
       line-height: 1.4;
       margin-top: 2px;
     }
@@ -352,11 +355,28 @@ onBeforeUnmount(() => {
 
   &__tabs {
     :deep(.van-tabs__wrap) {
-      background: var(--theme-other_background);
+      background: rgba(18, 23, 34, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    :deep(.van-tabs__nav) {
+      background: transparent;
     }
 
     :deep(.van-tab) {
-      font-size: 14px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    :deep(.van-tab--active) {
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    :deep(.van-tabs__line) {
+      background: #3b82f6;
+    }
+  }
       padding: 0 20px;
       height: 44px;
       line-height: 44px;

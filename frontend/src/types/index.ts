@@ -129,8 +129,8 @@ export interface GlobalSettingAttributes {
   httpProxyHost: string;
   httpProxyPort: number | string;
   isProxyEnabled: boolean;
-  AdminUserCode: number;
-  CommonUserCode: number;
+  AdminUserCode: string | number;
+  CommonUserCode: string | number;
 }
 export interface UserSettingAttributes {
   cloud115Cookie: string;

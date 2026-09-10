@@ -17,16 +17,14 @@
             placeholder="7890"
           />
           <van-field
-            v-model.number="localGlobalSetting.AdminUserCode"
+            v-model="localGlobalSetting.AdminUserCode"
             label="管理员码"
-            type="digit"
-            placeholder="设置管理员注册码"
+            placeholder="请输入管理员注册码"
           />
           <van-field
-            v-model.number="localGlobalSetting.CommonUserCode"
+            v-model="localGlobalSetting.CommonUserCode"
             label="用户注册码"
-            type="digit"
-            placeholder="设置普通用户注册码"
+            placeholder="请输入普通用户注册码"
           />
           <van-cell center title="启用代理">
             <template #right-icon>
@@ -169,8 +167,8 @@ const localGlobalSetting = ref<GlobalSettingAttributes>({
   httpProxyHost: "127.0.0.1",
   httpProxyPort: "7890",
   isProxyEnabled: false,
-  AdminUserCode: 230713,
-  CommonUserCode: 9527,
+  AdminUserCode: "012101",
+  CommonUserCode: "5549",
   teleChannels: "",
   jiaofuCookie: "",
 });
@@ -279,24 +277,25 @@ const handleProxyHostChange = (val: string) => {
 <style lang="scss" scoped>
 .setting {
   min-height: 100vh;
-  background: var(--theme-background);
-  padding: var(--spacing-base);
-  padding-bottom: 90px; // 为底部导航栏和按钮留出空间
+  background: #0c0f17;
+  padding: 12px;
+  padding-bottom: 110px;
 
   &__section {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: 16px;
   }
 
   &__title {
-    font-size: 16px; // 统一字体大小
-    font-weight: 500;
-    margin-bottom: var(--spacing-base);
-    color: var(--theme-color);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #f8fafc;
   }
 
   &__card {
-    background: var(--theme-other_background);
-    border-radius: var(--border-radius-lg);
+    background: rgba(22, 28, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     overflow: hidden;
   }
 
@@ -304,42 +303,59 @@ const handleProxyHostChange = (val: string) => {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 50px; // tabbar 高度
-    padding: var(--spacing-base);
-    background: var(--theme-other_background);
+    bottom: 50px;
+    padding: 10px 16px;
+    background: rgba(14, 18, 26, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     z-index: 99;
   }
 }
 
 // 深度修改 Vant 组件样式
+:deep(.van-cell-group) {
+  background: transparent;
+}
+
+:deep(.van-cell) {
+  font-size: 14px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #f8fafc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &::after {
+    display: none;
+  }
+}
+
 :deep(.van-field) {
-  font-size: 14px; // 统一字体大小
+  font-size: 14px;
 }
 
 :deep(.van-field__label) {
   width: 6em;
-  color: var(--theme-color);
+  color: #94a3b8;
 }
 
-:deep(.van-cell) {
-  font-size: 14px; // 统一字体大小
-  padding: 12px var(--spacing-base);
+:deep(.van-field__control) {
+  color: #f8fafc;
 }
 
 :deep(.van-button) {
-  height: 40px; // 统一按钮高度
-  font-size: 14px; // 统一字体大小
+  height: 40px;
+  font-size: 14px;
 }
 
 :deep(.van-cell-group--inset) {
   margin: 0;
 }
 
-// 添加图标样式
 :deep(.van-field__right-icon) {
   padding: 0 8px;
   cursor: pointer;
-  color: var(--theme-color);
+  color: #94a3b8;
 
   .van-icon {
     font-size: 18px;

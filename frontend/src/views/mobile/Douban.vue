@@ -117,22 +117,24 @@ const getRateColor = (rate: string | number) => {
 
   // 电影项
   &__item {
-    background: var(--theme-other_background);
+    background: rgba(22, 28, 42, 0.95);
     border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
   }
 
   // 海报区域
   &__poster {
     position: relative;
     aspect-ratio: 2/3;
-    background: #f5f5f5;
+    background: #0f131c;
     overflow: hidden;
 
     .poster__img {
       width: 100%;
       height: 100%;
+      background: #0f131c;
       transition: transform 0.3s ease;
 
       &:active {
@@ -144,10 +146,11 @@ const getRateColor = (rate: string | number) => {
       position: absolute;
       top: var(--spacing-xs);
       right: var(--spacing-xs);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 2px 6px;
-      border-radius: var(--border-radius-lg);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     }
 
     .poster__action {
@@ -156,7 +159,7 @@ const getRateColor = (rate: string | number) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.65);
       opacity: 0;
       transition: opacity 0.2s ease;
       color: #fff;
@@ -172,15 +175,16 @@ const getRateColor = (rate: string | number) => {
     padding: 6px 8px;
 
     .info__title {
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 13px;
+      font-weight: 600;
       line-height: 1.4;
-      color: var(--theme-color);
+      color: #f8fafc;
+      background: transparent;
       text-align: left;
       border: none;
 
       &:active {
-        color: var(--theme-theme);
+        color: #3b82f6;
       }
     }
   }

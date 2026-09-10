@@ -123,7 +123,8 @@ const handleLogout = () => {
 .home {
   // 布局
   min-height: 100vh;
-  background: var(--theme-background);
+  background: #0c0f17;
+  color: #f8fafc;
   display: flex;
   flex-direction: column;
 
@@ -134,42 +135,61 @@ const handleLogout = () => {
     left: 0;
     right: 0;
     z-index: 100;
-    background: var(--theme-other_background);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+    background: rgba(14, 18, 26, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 
     .header__wrapper {
       display: flex;
       align-items: center;
-      padding: 8px;
+      padding: 6px 10px;
     }
 
     .header__search {
       flex: 1;
       padding: 0;
       background: transparent;
+
+      :deep(.van-search__content) {
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 20px;
+      }
+
+      :deep(.van-field__control) {
+        color: #f8fafc;
+        &::placeholder {
+          color: #64748b;
+        }
+      }
+
+      :deep(.van-field__left-icon) {
+        color: #64748b;
+      }
     }
 
     .header__action {
-      padding: 8px;
+      padding: 6px 8px;
       margin-left: 4px;
-      color: var(--theme-color);
-      font-size: 24px;
+      color: #94a3b8;
+      font-size: 22px;
       cursor: pointer;
       line-height: 1;
 
       &:active {
-        color: var(--theme-theme);
+        color: #ef4444;
       }
     }
   }
 
-  // 主内容区 - 调整顶部间距
+  // 主内容区
   &__content {
-    padding-top: 64px; // 搜索框高度(48px) + 上下padding(8px * 2)
-    padding-bottom: 100px; // tabbar高度 + 底部安全区域
+    padding-top: 56px;
+    padding-bottom: 70px;
     box-sizing: border-box;
     flex: 1;
+    background: #0c0f17;
   }
 
   // 加载状态
@@ -179,6 +199,7 @@ const handleLogout = () => {
     justify-content: center;
     font-size: 14px;
     color: #fff;
+    background: rgba(12, 15, 23, 0.85);
   }
 }
 
@@ -195,16 +216,18 @@ const handleLogout = () => {
 
 // 深度修改 Vant 组件样式
 :deep(.van-tabbar) {
-  background: var(--theme-other_background);
-  backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(14, 18, 26, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 :deep(.van-tabbar-item) {
-  color: var(--theme-color);
+  color: #94a3b8;
 }
 
 :deep(.van-tabbar-item--active) {
-  color: var(--theme-theme);
+  color: #3b82f6;
+  font-weight: 600;
 }
 </style>

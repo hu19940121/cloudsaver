@@ -291,15 +291,16 @@ const handleLoadMore = (channelId: string) => {
 }
 
 .channel-group {
-  background: var(--theme-card-bg, #ffffff);
+  background: rgba(18, 23, 34, 0.85);
   border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   transition: box-shadow 0.3s ease;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 }
 
@@ -307,15 +308,15 @@ const handleLoadMore = (channelId: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 22px;
-  background: rgba(248, 249, 252, 0.75);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 14px 20px;
+  background: rgba(26, 33, 48, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   cursor: pointer;
   user-select: none;
   transition: background 0.2s ease;
 
   &:hover {
-    background: rgba(240, 244, 250, 0.9);
+    background: rgba(32, 41, 60, 0.75);
   }
 
   &.is-collapsed {
@@ -328,11 +329,11 @@ const handleLoadMore = (channelId: string) => {
     gap: 12px;
 
     .channel-avatar {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      border: 2px solid #ffffff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       flex-shrink: 0;
 
       .avatar-fallback {
@@ -341,8 +342,8 @@ const handleLoadMore = (channelId: string) => {
         justify-content: center;
         width: 100%;
         height: 100%;
-        background: #e4e7ed;
-        color: #909399;
+        background: #1e293b;
+        color: #64748b;
       }
     }
 
@@ -352,16 +353,16 @@ const handleLoadMore = (channelId: string) => {
       gap: 10px;
 
       .channel-name {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        color: #1f2329;
+        color: #f8fafc;
       }
 
       .channel-badge {
         font-size: 11px;
         font-weight: 500;
-        color: #909399;
-        background: #f0f2f5;
+        color: #94a3b8;
+        background: rgba(255, 255, 255, 0.06);
         padding: 2px 8px;
         border-radius: 10px;
       }
@@ -371,24 +372,24 @@ const handleLoadMore = (channelId: string) => {
   .group-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
 
     .tg-link {
       font-size: 13px;
-      color: #909399;
+      color: #64748b;
       display: flex;
       align-items: center;
       gap: 4px;
       transition: color 0.2s;
 
       &:hover {
-        color: var(--theme-primary, #409eff);
+        color: var(--theme-primary, #3b82f6);
       }
     }
 
     .expand-btn {
       font-size: 16px;
-      color: #909399;
+      color: #64748b;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       &.is-active {
@@ -399,29 +400,29 @@ const handleLoadMore = (channelId: string) => {
 }
 
 .group-body {
-  padding: 20px;
+  padding: 18px;
 }
 
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  gap: 18px;
 }
 
 .resource-card-item {
-  background: #ffffff;
+  background: rgba(22, 28, 42, 0.95);
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-    border-color: rgba(64, 158, 255, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    border-color: rgba(59, 130, 246, 0.4);
 
     .cover-img {
       transform: scale(1.05);
@@ -435,9 +436,9 @@ const handleLoadMore = (channelId: string) => {
   .card-cover-box {
     position: relative;
     width: 100%;
-    height: 160px;
+    height: 155px;
     overflow: hidden;
-    background: #f5f7fa;
+    background: #0f131c;
     cursor: pointer;
 
     .cover-img {
@@ -452,7 +453,7 @@ const handleLoadMore = (channelId: string) => {
       justify-content: center;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #f2f4f7, #e5e9f2);
+      background: linear-gradient(135deg, #111520, #192030);
     }
 
     .cloud-pill {
@@ -463,7 +464,7 @@ const handleLoadMore = (channelId: string) => {
 
       :deep(.el-tag) {
         font-weight: 600;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
       }
     }
 
@@ -473,7 +474,7 @@ const handleLoadMore = (channelId: string) => {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.45);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -484,10 +485,11 @@ const handleLoadMore = (channelId: string) => {
 
       .preview-text {
         color: #ffffff;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 500;
-        padding: 5px 12px;
-        background: rgba(0, 0, 0, 0.5);
+        padding: 4px 12px;
+        background: rgba(0, 0, 0, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 20px;
       }
     }
@@ -503,7 +505,7 @@ const handleLoadMore = (channelId: string) => {
     .card-title {
       font-size: 15px;
       font-weight: 600;
-      color: #1f2329;
+      color: #f8fafc;
       line-height: 1.4;
       text-decoration: none;
       display: -webkit-box;
@@ -515,20 +517,20 @@ const handleLoadMore = (channelId: string) => {
       transition: color 0.2s;
 
       &:hover {
-        color: var(--theme-primary, #409eff);
+        color: var(--theme-primary, #3b82f6);
       }
     }
 
     .card-snippet {
       font-size: 12px;
-      color: #86909c;
-      line-height: 1.5;
+      color: #94a3b8;
+      line-height: 1.55;
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       line-clamp: 2;
       overflow: hidden;
-      max-height: 36px;
+      max-height: 38px;
       cursor: pointer;
 
       :deep(p) {
@@ -550,22 +552,23 @@ const handleLoadMore = (channelId: string) => {
 
       .tag-chip {
         font-size: 11px;
-        color: #409eff;
-        background: rgba(64, 158, 255, 0.08);
+        color: #60a5fa;
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.2);
         padding: 1px 7px;
         border-radius: 5px;
         cursor: pointer;
         transition: all 0.2s;
 
         &:hover {
-          background: #409eff;
+          background: #3b82f6;
           color: #ffffff;
         }
       }
 
       .tag-more {
         font-size: 11px;
-        color: #909399;
+        color: #64748b;
       }
     }
 
@@ -575,17 +578,19 @@ const handleLoadMore = (channelId: string) => {
       gap: 10px;
       margin-top: 8px;
       padding-top: 10px;
-      border-top: 1px solid rgba(0, 0, 0, 0.04);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
 
       .btn-jump {
         flex: 1;
         border-radius: 8px;
-        color: #606266;
+        color: #94a3b8;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
 
         &:hover {
-          color: var(--theme-primary, #409eff);
-          border-color: var(--theme-primary, #409eff);
-          background: rgba(64, 158, 255, 0.04);
+          color: #f8fafc;
+          border-color: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.09);
         }
       }
 
@@ -593,14 +598,53 @@ const handleLoadMore = (channelId: string) => {
         flex: 1.3;
         font-weight: 600;
         border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(64, 158, 255, 0.25);
+        border: none;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        box-shadow: 0 3px 12px rgba(59, 130, 246, 0.35);
         transition: all 0.2s;
 
         &:hover {
+          background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
           transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(64, 158, 255, 0.35);
+          box-shadow: 0 5px 16px rgba(59, 130, 246, 0.5);
         }
       }
+    }
+  }
+}
+
+// 移动端响应式适配
+@media screen and (max-width: 768px) {
+  .resource-card-container {
+    gap: 14px;
+  }
+
+  .channel-group {
+    border-radius: 12px;
+  }
+
+  .group-header {
+    padding: 10px 14px;
+
+    .group-left .channel-info .channel-name {
+      font-size: 14px;
+    }
+  }
+
+  .group-body {
+    padding: 10px;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr; // 移动端单列流式，杜绝挤压变形
+    gap: 12px;
+  }
+
+  .resource-card-item {
+    border-radius: 10px;
+
+    .card-cover-box {
+      height: 140px;
     }
   }
 }

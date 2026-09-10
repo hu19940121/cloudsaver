@@ -8,8 +8,8 @@ const DEFAULT_GLOBAL_SETTINGS = {
   httpProxyHost: "127.0.0.1",
   httpProxyPort: 7890,
   isProxyEnabled: false,
-  CommonUserCode: 9527,
-  AdminUserCode: 230713,
+  CommonUserCode: "5549",
+  AdminUserCode: "012101",
   teleChannels: "",
   jiaofuCookie: "",
 };

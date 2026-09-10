@@ -1,30 +1,50 @@
 <template>
   <div class="pc-search">
-    <!-- 搜索区域 -->
+    <!-- 搜索输入区域 (流媒体发光胶囊搜索栏) -->
     <div class="pc-search__input">
-      <el-input
-        v-model="keyword"
-        placeholder="请输入搜索关键词或输入链接直接解析"
-        clearable
-        @keyup.enter="handleSearch"
-      >
-        <template #prefix>
-          <el-icon><Search /></el-icon>
-        </template>
-        <template #suffix>
-          <el-icon v-if="keyword" class="search-icon" @click="handleSearch">
-            <ArrowRight />
-          </el-icon>
-        </template>
-      </el-input>
+      <div class="search-bar-shell" :class="{ 'is-focused': isInputFocused, 'has-val': !!keyword }">
+        <div class="search-lens-box">
+          <el-icon class="search-prefix-icon"><Search /></el-icon>
+        </div>
+        <input
+          v-model="keyword"
+          class="custom-search-input"
+          placeholder="搜索影视剧集、电影、动漫，或粘贴夸克/115网盘链接..."
+          autocomplete="off"
+          @focus="isInputFocused = true"
+          @blur="isInputFocused = false"
+          @keyup.enter="handleSearch"
+        />
+        <div class="search-right-actions">
+          <button
+            v-if="keyword"
+            type="button"
+            class="clear-text-btn"
+            title="清空输入"
+            @click="keyword = ''"
+          >
+            <el-icon><CircleClose /></el-icon>
+          </button>
+          <span class="shortcut-tag">↵ Enter</span>
+          <button
+            type="button"
+            class="search-submit-btn"
+            :class="{ 'has-keyword': !!keyword }"
+            @click="handleSearch"
+          >
+            <span>搜索</span>
+            <el-icon class="btn-arrow"><ArrowRight /></el-icon>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- 用户操作区 -->
+    <!-- 用户与退出操作区 -->
     <div class="pc-search__actions">
       <el-tooltip effect="dark" content="退出登录" placement="bottom">
-        <el-button class="logout-btn" type="text" @click="handleLogout">
+        <button type="button" class="action-btn logout-btn" @click="handleLogout">
           <el-icon><SwitchButton /></el-icon>
-        </el-button>
+        </button>
       </el-tooltip>
     </div>
   </div>
@@ -35,30 +55,32 @@ import { ref, computed, watch } from "vue";
 import { useResourceStore } from "@/stores/resource";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { Search, ArrowRight, SwitchButton } from "@element-plus/icons-vue";
+import {
+  Search,
+  ArrowRight,
+  SwitchButton,
+  CircleClose,
+} from "@element-plus/icons-vue";
 import { STORAGE_KEYS } from "@/constants/storage";
 
-// 路由相关
 const route = useRoute();
 const router = useRouter();
 const resourcStore = useResourceStore();
 
-// 响应式数据
 const keyword = ref("");
+const isInputFocused = ref(false);
 const routeKeyword = computed(() => route.query.keyword as string);
 
-// 退出登录
 const handleLogout = () => {
   localStorage.removeItem(STORAGE_KEYS.TOKEN);
   router.push("/login");
-  ElMessage.success("已退出登录");
+  ElMessage.success("已安全退出登录");
 };
 
-// 搜索处理
 const handleSearch = async () => {
   const searchText = keyword.value.trim();
   if (!searchText) {
-    ElMessage.warning("请输入搜索内容");
+    ElMessage.warning("请输入搜索关键词或网盘链接");
     return;
   }
 
@@ -75,7 +97,6 @@ const handleSearch = async () => {
   }
 };
 
-// 监听路由参数变化
 watch(
   () => routeKeyword.value,
   (newKeyword) => {
@@ -99,7 +120,8 @@ watch(
 @use "@/styles/common.scss" as *;
 
 .pc-search {
-  @include flex-center;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   width: 100%;
@@ -107,97 +129,228 @@ watch(
   // 搜索输入区域
   &__input {
     flex: 1;
-    min-width: 0; // 防止溢出
+    max-width: 820px;
 
-    :deep(.el-input) {
-      --el-input-height: 44px;
+    .search-bar-shell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 46px;
+      padding: 0 4px 0 16px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
 
-      .el-input__wrapper {
-        @include glass-effect;
-        padding: 0 16px;
-        border-radius: var(--theme-radius);
+      &:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+
+      &.is-focused {
+        background: rgba(20, 26, 38, 0.95);
+        border-color: #3b82f6;
         box-shadow:
-          inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-          0 2px 4px rgba(0, 0, 0, 0.05),
-          0 1px 2px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        transition: var(--theme-transition);
-        background: rgba(255, 255, 255, 0.9);
+          0 0 0 3px rgba(59, 130, 246, 0.2),
+          0 8px 25px rgba(0, 0, 0, 0.45);
 
-        &:hover {
-          border-color: var(--theme-primary);
-          box-shadow:
-            inset 0 0 0 1px var(--theme-primary),
-            0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        &.is-focus {
-          border-color: var(--theme-primary);
-          box-shadow:
-            inset 0 0 0 1px var(--theme-primary),
-            0 4px 8px rgba(0, 0, 0, 0.1),
-            0 0 0 3px rgba(0, 102, 204, 0.1);
-          background: #fff;
+        .search-lens-box .search-prefix-icon {
+          color: #3b82f6;
+          filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6));
         }
       }
 
-      .el-input__inner {
-        font-size: 15px;
-        color: var(--theme-text-primary);
-        height: 42px;
-        line-height: 42px;
+      .search-lens-box {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+        flex-shrink: 0;
+
+        .search-prefix-icon {
+          font-size: 18px;
+          color: #64748b;
+          transition: all 0.25s;
+        }
+      }
+
+      .custom-search-input {
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 14px;
+        font-weight: 500;
+        color: #f8fafc;
+        letter-spacing: 0.2px;
 
         &::placeholder {
-          color: var(--theme-text-secondary);
+          color: #64748b;
+          font-weight: 400;
         }
       }
 
-      .el-input__prefix-inner {
-        .el-icon {
-          font-size: 18px;
-          color: var(--theme-text-secondary);
-          margin-right: 8px;
+      .search-right-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+
+        .clear-text-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          border: none;
+          background: transparent;
+          color: #64748b;
+          cursor: pointer;
+          border-radius: 50%;
+          transition: all 0.2s;
+
+          &:hover {
+            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.1);
+          }
         }
-      }
 
-      .search-icon {
-        font-size: 18px;
-        cursor: pointer;
-        color: var(--theme-primary);
-        transition: var(--theme-transition);
-        margin-left: 8px;
+        .shortcut-tag {
+          font-size: 11px;
+          color: #475569;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          padding: 2px 7px;
+          border-radius: 6px;
+          user-select: none;
+        }
 
-        &:hover {
-          transform: scale(1.1);
+        .search-submit-btn {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          height: 38px;
+          padding: 0 16px;
+          border-radius: 20px;
+          border: none;
+          background: rgba(255, 255, 255, 0.08);
+          color: #94a3b8;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+          .btn-arrow {
+            font-size: 14px;
+            transition: transform 0.2s;
+          }
+
+          &:hover,
+          &.has-keyword {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+
+            .btn-arrow {
+              transform: translateX(2px);
+            }
+          }
+
+          &:active {
+            transform: translateY(1px);
+          }
         }
       }
     }
   }
 
-  // 操作区域
+  // 退出等操作区域
   &__actions {
-    .logout-btn {
-      @include glass-effect;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      border-radius: var(--theme-radius);
-      transition: var(--theme-transition);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+
+    .action-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 
       .el-icon {
-        font-size: 20px;
-        color: var(--theme-text-regular);
-        transition: var(--theme-transition);
+        font-size: 18px;
+        transition: transform 0.2s;
       }
 
       &:hover {
-        background: var(--theme-primary);
-        transform: translateY(-2px);
-        box-shadow: var(--theme-shadow-sm);
+        background: rgba(239, 68, 68, 0.15);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #f87171;
+        transform: translateY(-1px);
 
         .el-icon {
-          color: #fff;
+          transform: scale(1.1);
         }
+      }
+    }
+  }
+}
+
+// 移动端自适应优化
+@media screen and (max-width: 768px) {
+  .pc-search {
+    gap: 8px;
+
+    &__input .search-bar-shell {
+      height: 40px;
+      padding: 0 3px 0 12px;
+
+      .search-lens-box {
+        margin-right: 6px;
+        .search-prefix-icon {
+          font-size: 16px;
+        }
+      }
+
+      .custom-search-input {
+        font-size: 13px;
+      }
+
+      .search-right-actions {
+        gap: 4px;
+
+        .shortcut-tag {
+          display: none; // 手机端隐藏键盘快捷提示
+        }
+
+        .search-submit-btn {
+          height: 32px;
+          padding: 0 10px;
+          font-size: 12px;
+
+          span {
+            display: inline;
+          }
+        }
+      }
+    }
+
+    &__actions .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      .el-icon {
+        font-size: 16px;
       }
     }
   }

@@ -753,7 +753,8 @@ const applyAiRename = () => {
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    background: var(--el-fill-color-lighter, #f5f7fa);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: var(--theme-radius);
     font-size: 13px;
 
@@ -766,7 +767,7 @@ const applyAiRename = () => {
 
       .folder-root-icon {
         font-size: 16px;
-        color: var(--el-color-primary);
+        color: #f59e0b;
         flex-shrink: 0;
       }
 
@@ -780,26 +781,26 @@ const applyAiRename = () => {
           align-items: center;
 
           .crumb-text {
-            color: var(--theme-text-secondary);
+            color: #94a3b8;
             transition: color 0.2s;
 
             &.is-clickable {
               cursor: pointer;
               &:hover {
-                color: var(--el-color-primary);
+                color: #3b82f6;
                 text-decoration: underline;
               }
             }
 
             &.is-active {
-              color: var(--theme-text-primary);
+              color: #f8fafc;
               font-weight: 600;
             }
           }
 
           .crumb-separator {
             margin: 0 6px;
-            color: var(--theme-text-placeholder, #c0c4cc);
+            color: #475569;
           }
         }
       }
@@ -811,22 +812,29 @@ const applyAiRename = () => {
     align-items: center;
     justify-content: space-between;
     padding: 10px 14px;
-    background: var(--el-fill-color-light);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: var(--theme-radius);
 
     .select-info {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: var(--theme-text-regular);
+      color: #cbd5e1;
       font-size: 13px;
 
       .el-icon {
         font-size: 15px;
       }
 
+      .info-tip-icon {
+        color: #94a3b8;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
       .total-size {
-        color: var(--theme-text-secondary);
+        color: #64748b;
       }
     }
 
@@ -846,9 +854,26 @@ const applyAiRename = () => {
     flex: 1;
     overflow-y: auto;
     max-height: 380px;
-    border: 1px solid var(--el-border-color-lighter);
+    background: rgba(14, 19, 29, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--theme-radius);
-    padding: 4px;
+    padding: 6px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      &:hover {
+        background: rgba(59, 130, 246, 0.5);
+      }
+    }
 
     .empty-folder {
       padding: 30px 0;
@@ -858,17 +883,19 @@ const applyAiRename = () => {
       display: flex;
       align-items: center;
       padding: 8px 12px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
       gap: 10px;
+      border: 1px solid transparent;
 
       &:hover {
-        background: var(--el-fill-color-light);
+        background: rgba(255, 255, 255, 0.05);
       }
 
       &.is-checked {
-        background: rgba(64, 158, 255, 0.08);
+        background: rgba(59, 130, 246, 0.12);
+        border-color: rgba(59, 130, 246, 0.25);
       }
 
       &.is-folder {
@@ -884,13 +911,13 @@ const applyAiRename = () => {
 
         .icon-folder {
           font-size: 18px;
-          color: #e6a23c;
+          color: #f59e0b;
           flex-shrink: 0;
         }
 
         .icon-file {
           font-size: 18px;
-          color: #409eff;
+          color: #3b82f6;
           flex-shrink: 0;
         }
 
@@ -908,7 +935,7 @@ const applyAiRename = () => {
         .file-name {
           flex: 1;
           font-size: 13px;
-          color: var(--theme-text-primary);
+          color: #f8fafc;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -922,6 +949,7 @@ const applyAiRename = () => {
 
         .rename-btn {
           opacity: 0.6;
+          color: #3b82f6;
           transition: opacity 0.2s;
           &:hover {
             opacity: 1;
@@ -930,7 +958,7 @@ const applyAiRename = () => {
 
         .file-size {
           font-size: 12px;
-          color: var(--theme-text-secondary);
+          color: #64748b;
           flex-shrink: 0;
           margin-left: 8px;
         }
@@ -941,7 +969,7 @@ const applyAiRename = () => {
         margin-left: 8px;
 
         :deep(.el-button) {
-          padding: 2px 6px;
+          padding: 2px 8px;
           font-size: 12px;
           display: flex;
           align-items: center;
@@ -958,9 +986,10 @@ const applyAiRename = () => {
   gap: 16px;
 
   .ai-config-box {
-    background: var(--el-fill-color-light, #f5f7fa);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     padding: 14px 16px;
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -974,7 +1003,7 @@ const applyAiRename = () => {
         width: 80px;
         font-size: 13px;
         font-weight: 500;
-        color: var(--el-text-color-regular);
+        color: #cbd5e1;
         flex-shrink: 0;
       }
     }
@@ -1000,17 +1029,38 @@ const applyAiRename = () => {
         margin: 0;
         font-size: 14px;
         font-weight: 600;
+        color: #f8fafc;
       }
 
       .preview-tip {
         font-size: 12px;
-        color: var(--el-text-color-secondary);
+        color: #64748b;
       }
     }
 
     .preview-table-wrapper {
-      border-radius: 6px;
+      border-radius: 10px;
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      :deep(.el-table) {
+        --el-table-bg-color: #141924;
+        --el-table-tr-bg-color: #141924;
+        --el-table-header-bg-color: #182030;
+        --el-table-border-color: rgba(255, 255, 255, 0.07);
+        color: #cbd5e1;
+
+        .el-table__header th {
+          color: #94a3b8;
+          font-weight: 600;
+        }
+
+        .el-input__wrapper {
+          background: rgba(255, 255, 255, 0.05);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+          color: #f8fafc;
+        }
+      }
     }
   }
 }

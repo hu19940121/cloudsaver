@@ -296,14 +296,13 @@ const registerCodeRules: FieldRule[] = [{ required: true, message: "请填写注
   height: 100vh;
   width: 100%;
   overflow: hidden;
+  background: #090c12;
 
   // 背景
   &__background {
     position: absolute;
     inset: 0;
-    background: url("@/assets/images/mobile-login-bg.png") no-repeat;
-    background-size: 100% auto;
-    filter: blur(1px);
+    background: radial-gradient(circle at 50% 25%, #161f32 0%, #080a0f 85%);
   }
 
   // 主内容区
@@ -313,11 +312,13 @@ const registerCodeRules: FieldRule[] = [{ required: true, message: "请填写注
     left: 0;
     right: 0;
     min-height: 65%;
-    padding: 40px 20px;
-    background-color: var(--theme-other_background);
+    padding: 32px 18px 24px;
+    background: rgba(18, 24, 38, 0.96);
     border-radius: 24px 24px 0 0;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -8px 36px rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   // 头部
@@ -325,56 +326,86 @@ const registerCodeRules: FieldRule[] = [{ required: true, message: "请填写注
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 40px;
-  }
-
-  &__logo {
-    width: 60px;
-    height: 60px;
-    margin-right: 12px;
-    object-fit: contain;
+    margin-bottom: 24px;
   }
 
   &__title {
     margin: 0;
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--theme-theme);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: #f8fafc;
   }
 
   // 表单
   &__form {
     padding: 0;
-    margin-top: 20px;
+    margin-top: 16px;
   }
 
   &__form-group {
-    margin: 0 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin: 0 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     border-radius: 12px;
     overflow: hidden;
+
+    :deep(.van-cell) {
+      background: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+      &::after {
+        display: none;
+      }
+    }
+
+    :deep(.van-field__label) {
+      color: #94a3b8;
+    }
+
+    :deep(.van-field__control) {
+      color: #f8fafc;
+      &::placeholder {
+        color: #64748b;
+      }
+    }
+
+    :deep(.van-icon) {
+      color: #64748b;
+    }
   }
 
   &__submit {
-    margin: 32px 12px 0;
+    margin: 24px 4px 0;
   }
 
   &__button {
-    height: 48px;
-    font-size: 16px;
-    font-weight: 500;
+    height: 44px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
   }
 
   // 记住密码区域
   &__remember {
-    padding: 12px 16px;
-    border-top: 0.5px solid #f5f5f5;
+    padding: 10px 16px;
+    background: transparent;
+    border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+
+    :deep(.van-checkbox__label) {
+      color: #94a3b8;
+      font-size: 13px;
+    }
   }
 
   &__tabs {
     :deep() {
       .van-tabs__wrap {
-        padding: 0 12px;
+        padding: 0 8px;
       }
 
       .van-tabs__nav {
@@ -382,17 +413,17 @@ const registerCodeRules: FieldRule[] = [{ required: true, message: "请填写注
       }
 
       .van-tab {
-        color: var(--theme-color);
-        font-size: 16px;
+        color: #94a3b8;
+        font-size: 15px;
       }
 
       .van-tab--active {
-        color: var(--theme-theme);
-        font-weight: 500;
+        color: #3b82f6;
+        font-weight: 600;
       }
 
       .van-tabs__line {
-        background-color: var(--theme-theme);
+        background-color: #3b82f6;
       }
     }
   }

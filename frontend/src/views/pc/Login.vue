@@ -1,6 +1,6 @@
 <template>
   <div class="login-page">
-    <!-- 科技质感光晕背景 -->
+    <!-- 科技质感极光流光背景 -->
     <div class="login-backdrop">
       <div class="glow-orb orb-1"></div>
       <div class="glow-orb orb-2"></div>
@@ -8,18 +8,18 @@
       <div class="grid-overlay"></div>
     </div>
 
-    <!-- 悬浮毛玻璃登录卡片 -->
+    <!-- 悬浮深色毛玻璃登录卡片 -->
     <div class="login-card-wrapper">
       <div class="login-card">
-        <!-- 头部品牌展示（去除了旧 Logo 图片） -->
+        <!-- 头部品牌展示 -->
         <div class="card-header">
           <div class="brand-badge">
             <span class="pulse-dot"></span>
             <span class="brand-text">Cloud Saver</span>
           </div>
-          <h1 class="welcome-title">{{ activeTab === 'login' ? '欢迎回来' : '创建新账户' }}</h1>
+          <h1 class="welcome-title">{{ activeTab === 'login' ? '欢迎回来' : '注册新账户' }}</h1>
           <p class="welcome-subtitle">
-            {{ activeTab === 'login' ? '跨网盘资源搜索与标准化智能转存' : '配置您的专属网盘影视管家' }}
+            {{ activeTab === 'login' ? '登录以管理与转存您的影视资源' : '配置您的专属网盘影视管家' }}
           </p>
         </div>
 
@@ -80,7 +80,7 @@
 
               <div class="form-extras">
                 <el-checkbox v-model="rememberPassword" class="remember-check">
-                  记住登录凭据
+                  记住密码
                 </el-checkbox>
               </div>
 
@@ -91,7 +91,7 @@
                 :loading="loading"
                 @click="handleLogin"
               >
-                {{ loading ? '验证中...' : '立即登录' }}
+                {{ loading ? '正在验证...' : '立即登录' }}
               </el-button>
             </el-form>
           </div>
@@ -138,7 +138,7 @@
               <el-form-item prop="registerCode">
                 <el-input
                   v-model="registerForm.registerCode"
-                  placeholder="请输入系统注册码"
+                  placeholder="请输入邀请注册码"
                   :prefix-icon="Key"
                   size="large"
                 />
@@ -151,13 +151,13 @@
                 :loading="loading"
                 @click="handleRegister"
               >
-                {{ loading ? '创建中...' : '注册账户' }}
+                {{ loading ? '正在创建...' : '注册账户' }}
               </el-button>
             </el-form>
           </div>
         </transition>
 
-        <!-- 底部版权/安全提示 -->
+        <!-- 底部标语 -->
         <div class="card-footer">
           <span>智能解析 · 云盘直达 · AI 重命名</span>
         </div>
@@ -311,53 +311,55 @@ const handleRegister = async () => {
 .login-page {
   position: relative;
   min-height: 100vh;
-  width: 100vw;
+  width: 100%;
+  max-width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0d1117;
-  overflow: hidden;
+  background: #090c12;
+  overflow-x: hidden;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-// 科技渐变光晕背景
+// 极光光晕暗调背景
 .login-backdrop {
   position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 10%, #161f30 0%, #090d13 85%);
+  background: radial-gradient(circle at 50% 20%, #131a29 0%, #080a0f 85%);
 
   .glow-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.5;
+    filter: blur(100px);
+    opacity: 0.35;
     animation: floatOrb 18s ease-in-out infinite alternate;
   }
 
   .orb-1 {
     width: 480px;
     height: 480px;
-    background: linear-gradient(135deg, #1677ff, #00b96b);
-    top: -80px;
-    left: 20%;
+    background: linear-gradient(135deg, #1d4ed8, #059669);
+    top: -100px;
+    left: 15%;
   }
 
   .orb-2 {
     width: 400px;
     height: 400px;
-    background: linear-gradient(135deg, #722ed1, #1677ff);
-    bottom: -60px;
-    right: 25%;
+    background: linear-gradient(135deg, #6b21a8, #2563eb);
+    bottom: -80px;
+    right: 15%;
     animation-delay: -6s;
   }
 
   .orb-3 {
-    width: 320px;
-    height: 320px;
-    background: linear-gradient(135deg, #13c2c2, #2f54eb);
-    top: 45%;
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #0284c7, #4f46e5);
+    top: 40%;
     left: 60%;
     animation-delay: -12s;
   }
@@ -365,89 +367,88 @@ const handleRegister = async () => {
   .grid-overlay {
     position: absolute;
     inset: 0;
-    background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 32px 32px;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 36px 36px;
     opacity: 0.8;
   }
 }
 
 @keyframes floatOrb {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(40px, 30px) scale(1.08);
-  }
-  100% {
-    transform: translate(-30px, -20px) scale(0.95);
-  }
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 20px) scale(1.06); }
+  100% { transform: translate(-25px, -15px) scale(0.95); }
 }
 
-// 卡片外层与毛玻璃卡片
+// 卡片外层与深色毛玻璃卡片
 .login-card-wrapper {
   position: relative;
   z-index: 10;
-  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px 16px;
+  box-sizing: border-box;
 }
 
 .login-card {
-  width: 420px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  width: 100%;
+  background: rgba(18, 24, 38, 0.9);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   border-radius: 20px;
-  padding: 38px 36px 30px;
+  padding: 36px 32px 28px;
+  box-sizing: border-box;
   box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.35),
-    0 4px 16px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+    0 24px 60px rgba(0, 0, 0, 0.65),
+    0 4px 20px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease;
 }
 
 // 头部
 .card-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 
   .brand-badge {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 4px 14px;
-    background: rgba(22, 119, 255, 0.08);
-    border: 1px solid rgba(22, 119, 255, 0.18);
+    padding: 3px 12px;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
     border-radius: 20px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 
     .pulse-dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: #1677ff;
-      box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.25);
+      background: #3b82f6;
+      box-shadow: 0 0 8px #3b82f6;
     }
 
     .brand-text {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.5px;
-      color: #1677ff;
+      color: #60a5fa;
     }
   }
 
   .welcome-title {
-    font-size: 24px;
+    font-size: 23px;
     font-weight: 700;
-    color: #1a1f2c;
-    letter-spacing: -0.4px;
+    color: #f8fafc;
+    letter-spacing: -0.3px;
     margin: 0 0 6px;
   }
 
   .welcome-subtitle {
     font-size: 13px;
-    color: #8c9ba8;
+    color: #94a3b8;
     margin: 0;
     line-height: 1.4;
   }
@@ -457,10 +458,11 @@ const handleRegister = async () => {
 .tab-switcher {
   position: relative;
   display: flex;
-  background: #f0f2f5;
-  padding: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3px;
   border-radius: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 
   .tab-btn {
     position: relative;
@@ -471,25 +473,26 @@ const handleRegister = async () => {
     background: transparent;
     font-size: 14px;
     font-weight: 500;
-    color: #64748b;
+    color: #94a3b8;
     cursor: pointer;
     transition: color 0.25s ease;
 
     &.is-active {
-      color: #1e293b;
+      color: #f8fafc;
       font-weight: 600;
     }
   }
 
   .tab-indicator {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: calc(50% - 4px);
-    height: calc(100% - 8px);
-    background: #ffffff;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: calc(100% - 6px);
+    background: rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.45);
     border-radius: 9px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
   }
@@ -511,44 +514,44 @@ const handleRegister = async () => {
   transform: translateY(-6px);
 }
 
-// 输入框现代定制
+// 输入框现代深色定制
 :deep(.el-form-item) {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 
   .el-input__wrapper {
-    background-color: #f8fafc;
+    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
     box-shadow: none;
-    border: 1px solid #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2px 14px;
     transition: all 0.25s ease;
 
     &:hover {
-      background-color: #ffffff;
-      border-color: #cbd5e1;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
     &.is-focus {
-      background-color: #ffffff;
-      border-color: #1677ff;
-      box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12);
+      background-color: rgba(255, 255, 255, 0.09);
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
     }
   }
 
   .el-input__inner {
     height: 44px;
     font-size: 14px;
-    color: #1e293b;
+    color: #f8fafc;
     font-weight: 500;
 
     &::placeholder {
-      color: #94a3b8;
+      color: #64748b;
       font-weight: 400;
     }
   }
 
   .el-input__prefix-inner {
-    color: #94a3b8;
+    color: #64748b;
     font-size: 16px;
     margin-right: 8px;
   }
@@ -558,47 +561,71 @@ const handleRegister = async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: -6px 0 20px;
+  margin: -4px 0 18px;
 
   .remember-check {
     font-size: 13px;
-    color: #64748b;
+    color: #94a3b8;
     font-weight: 400;
   }
 }
 
-// 现代渐变主按钮
+// 现代电光蓝渐变提交按钮
 .modern-submit-btn {
   width: 100%;
-  height: 46px;
+  height: 44px;
   font-size: 15px;
   font-weight: 600;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
-  box-shadow: 0 8px 20px rgba(22, 119, 255, 0.32);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
   color: #ffffff;
   transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
   letter-spacing: 0.3px;
 
   &:hover {
-    background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
-    box-shadow: 0 10px 26px rgba(22, 119, 255, 0.45);
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
     transform: translateY(-1px);
   }
 
   &:active {
     transform: translateY(1px);
-    box-shadow: 0 4px 12px rgba(22, 119, 255, 0.25);
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.25);
   }
 }
 
 // 底部标语
 .card-footer {
-  margin-top: 24px;
+  margin-top: 22px;
   text-align: center;
   font-size: 12px;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
+  color: #64748b;
+  letter-spacing: 0.4px;
+}
+
+// 移动端响应式适配 (保证小屏手机不溢出变形)
+@media screen and (max-width: 480px) {
+  .login-card-wrapper {
+    padding: 12px;
+  }
+
+  .login-card {
+    padding: 26px 20px 22px;
+    border-radius: 16px;
+  }
+
+  .card-header {
+    margin-bottom: 18px;
+
+    .welcome-title {
+      font-size: 20px;
+    }
+  }
+
+  .tab-switcher {
+    margin-bottom: 18px;
+  }
 }
 </style>

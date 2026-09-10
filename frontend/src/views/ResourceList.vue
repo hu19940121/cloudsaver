@@ -288,20 +288,23 @@ onBeforeUnmount(() => {
 
   // 头部工具栏
   &__header {
-    @include glass-effect;
     display: flex;
     align-items: center;
     justify-content: space-between;
     min-height: 48px;
     padding: 0 20px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     border-radius: var(--theme-radius);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(20, 25, 36, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     transition: var(--theme-transition);
 
     &:hover {
-      border-color: var(--theme-primary);
-      box-shadow: var(--theme-shadow-sm);
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
     }
 
     .header__left {
@@ -314,7 +317,8 @@ onBeforeUnmount(() => {
       .refresh-btn {
         @include flex-center;
         gap: 8px;
-        color: var(--theme-text-regular);
+        color: #e2e8f0;
+        font-weight: 500;
         transition: var(--theme-transition);
         white-space: nowrap;
 
@@ -326,7 +330,7 @@ onBeforeUnmount(() => {
         .update-time {
           margin-left: 4px;
           font-size: 13px;
-          color: var(--theme-text-secondary);
+          color: #64748b;
           white-space: nowrap;
         }
 
@@ -340,15 +344,17 @@ onBeforeUnmount(() => {
     .header__right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       padding: 8px 0;
 
       .view-toggle {
         width: 36px;
         height: 36px;
         padding: 0;
-        color: var(--theme-text-regular);
-        border-radius: var(--theme-radius);
+        color: #94a3b8;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
         transition: var(--theme-transition);
 
         .el-icon {
@@ -356,20 +362,72 @@ onBeforeUnmount(() => {
         }
 
         &:hover {
-          color: var(--theme-primary);
-          background: rgba(0, 102, 204, 0.05);
+          color: #3b82f6;
+          border-color: rgba(59, 130, 246, 0.35);
+          background: rgba(59, 130, 246, 0.12);
           transform: translateY(-1px);
+        }
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      padding: 6px 12px;
+      margin-bottom: 12px;
+
+      .header__left {
+        .refresh-btn {
+          font-size: 13px;
+          .update-time {
+            display: none !important;
+          }
+        }
+      }
+
+      .header__right {
+        gap: 6px;
+        .view-toggle {
+          width: 32px;
+          height: 32px;
         }
       }
     }
   }
 
   // 内容区域
-  &__content {
-    position: relative;
-    width: 100%;
-    height: calc(100vh - 180px);
-    overflow-y: auto;
+    &__content {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 180px);
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        transition: all 0.25s;
+
+        &:hover {
+          background: rgba(59, 130, 246, 0.6);
+          box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        height: auto !important;
+        overflow-y: visible !important;
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding-bottom: 95px !important;
+      }
 
     // 资源列表组件样式覆盖
     :deep(.resource-table),
@@ -527,22 +585,28 @@ onBeforeUnmount(() => {
 }
 
 :deep(.el-dialog) {
-  border-radius: var(--theme-radius);
+  border-radius: 16px;
   overflow: hidden;
+  background: #141924;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
 
   .el-dialog__header {
     margin: 0;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--el-border-color-lighter);
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .el-dialog__body {
-    padding: 24px;
+    padding: 20px 24px;
+    color: #cbd5e1;
   }
 
   .el-dialog__footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--el-border-color-lighter);
+    padding: 14px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.02);
   }
 }
 

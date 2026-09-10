@@ -2,8 +2,8 @@ export interface GlobalSettingAttributes {
   httpProxyHost: string;
   httpProxyPort: string | number;
   isProxyEnabled: boolean;
-  AdminUserCode: number;
-  CommonUserCode: number;
+  AdminUserCode: string | number;
+  CommonUserCode: string | number;
   teleChannels?: string;
   jiaofuCookie?: string;
 }

@@ -1,41 +1,49 @@
-// 颜色系统
+// 流媒体影院风 (Cinematic Studio) 核心设计系统
 :root {
-  // 主题色
-  --theme-primary: #0066cc;
-  --theme-primary-hover: #0256ac;
-  --theme-success: #28cd41;
-  --theme-warning: #ff9f0a;
-  --theme-error: #ff3b30;
+  // 主题色 - 极光电光蓝 & 电影琥珀金
+  --theme-primary: #3b82f6;
+  --theme-primary-hover: #2563eb;
+  --theme-primary-light: rgba(59, 130, 246, 0.15);
+  --theme-success: #10b981;
+  --theme-warning: #f59e0b;
+  --theme-error: #ef4444;
 
-  // 中性色
-  --theme-bg: #f5f7fa;
-  --theme-card-bg: rgba(255, 255, 255, 0.8);
-  --theme-text-primary: #000000;
-  --theme-text-regular: #424242;
-  --theme-text-secondary: #6e6e6e;
+  // 影院暗调底色系统
+  --theme-bg: #0c0f17;
+  --theme-bg-secondary: #121722;
+  --theme-card-bg: rgba(20, 25, 36, 0.85);
+  --theme-card-hover: rgba(28, 35, 51, 0.95);
+  --theme-border: rgba(255, 255, 255, 0.08);
+  --theme-border-hover: rgba(59, 130, 246, 0.35);
 
-  // 特效
-  --theme-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --theme-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --theme-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  // 文字对比度系统
+  --theme-text-primary: #f8fafc;
+  --theme-text-regular: #cbd5e1;
+  --theme-text-secondary: #64748b;
+  --theme-text-muted: #475569;
 
-  // 圆角
+  // 弥散环境光阴影
+  --theme-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --theme-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --theme-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.65);
+  --theme-glow: 0 0 20px rgba(59, 130, 246, 0.25);
+
+  // 圆角体系
   --theme-radius-sm: 8px;
-  --theme-radius: 12px;
-  --theme-radius-lg: 16px;
+  --theme-radius: 14px;
+  --theme-radius-lg: 20px;
 
-  // 模糊效果
-  --theme-blur: blur(12px);
-
-  // 动画
-  --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  // 高斯模糊与过渡
+  --theme-blur: blur(20px);
+  --theme-transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
 }
 
-// Mixins
+// 玻璃拟态 Mixin
 @mixin glass-effect {
   background: var(--theme-card-bg);
   backdrop-filter: var(--theme-blur);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: var(--theme-blur);
+  border: 1px solid var(--theme-border);
 }
 
 @mixin flex-center {
@@ -50,13 +58,18 @@
   white-space: nowrap;
 }
 
-// 通用动画
+// 通用淡入淡出动画
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-.fade-enter-from,
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
 .fade-leave-to {
   opacity: 0;
+  transform: translateY(-4px);
 }
