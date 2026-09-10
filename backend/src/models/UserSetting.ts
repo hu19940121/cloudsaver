@@ -2,12 +2,15 @@ import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
 import User from "./User";
 
-interface UserSettingAttributes {
+export interface UserSettingAttributes {
   id: number;
   userId: string;
   cloud115UserId?: string;
   cloud115Cookie: string;
   quarkCookie: string;
+  aiApiUrl?: string;
+  aiApiKey?: string;
+  aiModel?: string;
 }
 
 interface UserSettingCreationAttributes extends Optional<UserSettingAttributes, "id"> {}
@@ -21,6 +24,9 @@ class UserSetting
   public cloud115UserId?: string;
   public cloud115Cookie!: string;
   public quarkCookie!: string;
+  public aiApiUrl?: string;
+  public aiApiKey?: string;
+  public aiModel?: string;
 }
 
 UserSetting.init(
@@ -51,6 +57,21 @@ UserSetting.init(
     quarkCookie: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    aiApiUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "https://api.deepseek.com/v1",
+    },
+    aiApiKey: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "",
+    },
+    aiModel: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "deepseek-chat",
     },
   },
   {

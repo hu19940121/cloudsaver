@@ -213,40 +213,82 @@ export class QuarkService implements ICloudStorageService {
     targetFolderId: string,
     renames: NonNullable<SaveFileParams["renames"]>
   ): Promise<void> {
-    // 延迟 1.5 秒，等待夸克后端将文件复制到目标目录
-    await new Promise((r) => setTimeout(r, 1500));
+    // 延迟 2.5 秒，等待夸克云端完成转存任务
+    await new Promise((r) => setTimeout(r, 2500));
 
     try {
-      // 获取目标目录下的最新文件列表
-      const sortResp = await this.api.get("/1/clouddrive/file/sort", {
-        params: {
-          pr: "ucpro",
-          fr: "pc",
-          uc_param_str: "",
-          pdir_fid: targetFolderId,
-          _page: "1",
-          _size: "100",
-          _fetch_total: "false",
-          _fetch_sub_dirs: "0",
-          _sort: "updated_at:desc",
-          __t: Date.now(),
-        },
-      });
+      let fileList: any[] = [];
+      // 循环重试几次，避免云端异步复制产生延迟
+      for (let retry = 0; retry < 4; retry++) {
+        const sortResp = await this.api.get("/1/clouddrive/file/sort", {
+          params: {
+            pr: "ucpro",
+            fr: "pc",
+            uc_param_str: "",
+            pdir_fid: targetFolderId,
+            _page: "1",
+            _size: "100",
+            _fetch_total: "false",
+            _fetch_sub_dirs: "0",
+            _sort: "updated_at:desc",
+            __t: Date.now(),
+          },
+        });
+        fileList = sortResp.data?.data?.list || [];
+        if (fileList.length > 0) break;
+        await new Promise((r) => setTimeout(r, 1500));
+      }
 
-      const fileList = sortResp.data?.data?.list || [];
+      // 递归搜集已保存的目标目录下的全部文件与子文件夹
+      const allFiles: any[] = [...fileList];
+      const traverseFolders = async (folders: any[], depth = 0) => {
+        if (depth > 3) return;
+        for (const item of folders) {
+          if (item.file_type === 0 || item.is_dir || !item.size) {
+            try {
+              const subResp = await this.api.get("/1/clouddrive/file/sort", {
+                params: {
+                  pr: "ucpro",
+                  fr: "pc",
+                  pdir_fid: item.fid,
+                  _page: "1",
+                  _size: "100",
+                  _fetch_total: "false",
+                  __t: Date.now(),
+                },
+              });
+              const subList = subResp.data?.data?.list || [];
+              allFiles.push(...subList);
+              if (subList.some((x: any) => x.file_type === 0 || x.is_dir)) {
+                await traverseFolders(subList, depth + 1);
+              }
+            } catch (e) {
+              // 忽略子文件夹读取异常
+            }
+          }
+        }
+      };
+
+      await traverseFolders(fileList);
+
+      const renamedFids = new Set<string>();
+
       for (const renameItem of renames) {
         if (!renameItem.newName || renameItem.newName === renameItem.originalName) {
           continue;
         }
-        // 匹配目标文件夹下具有原始名称的文件
-        const matched = fileList.find(
-          (f: any) => f.file_name === renameItem.originalName
+        // 匹配目标文件夹及直接子文件夹下具有原始名称且未处理过的文件
+        const matched = allFiles.find(
+          (f: any) => !renamedFids.has(f.fid) && f.file_name === renameItem.originalName
         );
         if (matched && matched.fid) {
-          await this.renameFile(matched.fid, renameItem.newName);
-          logger.info(
-            `夸克文件自动重命名成功: "${renameItem.originalName}" -> "${renameItem.newName}"`
-          );
+          const ok = await this.renameFile(matched.fid, renameItem.newName);
+          if (ok) {
+            renamedFids.add(matched.fid);
+            logger.info(
+              `夸克文件自动重命名成功: "${renameItem.originalName}" -> "${renameItem.newName}"`
+            );
+          }
         }
       }
     } catch (error) {

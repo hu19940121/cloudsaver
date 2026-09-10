@@ -210,6 +210,79 @@
       </div>
     </el-card>
 
+    <!-- AI 智能命名配置卡片 -->
+    <el-card class="settings-card ai-card">
+      <template #header>
+        <div class="card-header">
+          <el-icon><Cpu /></el-icon>
+          <h2>AI 智能命名配置</h2>
+        </div>
+      </template>
+
+      <div class="settings-section">
+        <div class="settings-group">
+          <div class="group-header">
+            <h3>大模型接口设置 (兼容 OpenAI / DeepSeek / 通义千问等)</h3>
+            <el-button
+              type="success"
+              plain
+              size="small"
+              :loading="isTestingAi"
+              @click="handleTestAi"
+            >
+              <el-icon><Connection /></el-icon> 测试连接
+            </el-button>
+          </div>
+
+          <div class="form-row">
+            <div class="form-item full-width">
+              <label for="aiApiUrl">API 接口地址 (Base URL)</label>
+              <el-input
+                id="aiApiUrl"
+                v-model="localUserSettings.aiApiUrl"
+                placeholder="例如: https://api.deepseek.com/v1 或 https://api.openai.com/v1"
+              >
+                <template #prefix>
+                  <el-icon><Link /></el-icon>
+                </template>
+              </el-input>
+              <span class="field-tip">支持任意兼容 OpenAI 协议的模型接口服务（默认推荐 DeepSeek）</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-item">
+              <label for="aiModel">模型名称 (Model)</label>
+              <el-input
+                id="aiModel"
+                v-model="localUserSettings.aiModel"
+                placeholder="例如: deepseek-chat, gpt-4o-mini, qwen-turbo"
+              >
+                <template #prefix>
+                  <el-icon><Cpu /></el-icon>
+                </template>
+              </el-input>
+            </div>
+
+            <div class="form-item">
+              <label for="aiApiKey">API 密钥 (API Key)</label>
+              <el-input
+                id="aiApiKey"
+                v-model="localUserSettings.aiApiKey"
+                type="password"
+                show-password
+                placeholder="请输入 API Key (例如 sk-...)"
+              >
+                <template #prefix>
+                  <el-icon><Key /></el-icon>
+                </template>
+              </el-input>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-card>
+
     <!-- 保存按钮 -->
     <div class="settings-actions">
       <el-button type="primary" @click="handleSave"> 保存设置 </el-button>
@@ -222,6 +295,7 @@ import { useUserSettingStore } from "@/stores/userSetting";
 import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import type { GlobalSettingAttributes, UserSettingAttributes } from "@/types/user";
+import { aiApi } from "@/api/ai";
 import {
   Connection,
   Monitor,
@@ -231,9 +305,36 @@ import {
   Lock,
   Plus,
   Delete,
+  Cpu,
+  Link,
 } from "@element-plus/icons-vue";
 
 const settingStore = useUserSettingStore();
+const isTestingAi = ref(false);
+
+const handleTestAi = async () => {
+  if (!localUserSettings.value.aiApiKey) {
+    ElMessage.warning("请先填写 AI API Key 后再进行测试");
+    return;
+  }
+  isTestingAi.value = true;
+  try {
+    const res = await aiApi.testConnection({
+      aiApiUrl: localUserSettings.value.aiApiUrl,
+      aiApiKey: localUserSettings.value.aiApiKey,
+      aiModel: localUserSettings.value.aiModel,
+    });
+    if (res.code === 0) {
+      ElMessage.success(res.message || "AI 接口测试成功！");
+    } else {
+      ElMessage.error(res.message || "测试失败");
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || "连接失败");
+  } finally {
+    isTestingAi.value = false;
+  }
+};
 
 // 本地状态
 const localGlobalSetting = ref<GlobalSettingAttributes>({
@@ -266,6 +367,9 @@ const removeChannel = (index: number) => {
 const localUserSettings = ref<UserSettingAttributes>({
   cloud115Cookie: "",
   quarkCookie: "",
+  aiApiUrl: "https://api.deepseek.com/v1",
+  aiApiKey: "",
+  aiModel: "deepseek-chat",
 });
 
 // 监听 store 变化,更新本地状态

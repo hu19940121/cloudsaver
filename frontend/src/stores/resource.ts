@@ -212,13 +212,31 @@ export const useResourceStore = defineStore("resource", {
       if (!match) throw new Error("链接解析失败");
       const parsedCode = drive.parseShareCode(match);
 
+      const allSelected = this.resourceSelect.filter((x) => x.isChecked);
+
+      // 关键过滤：若子文件/子目录的父级文件夹已经被选中，则不将子项重复放入 fids。
+      // 在网盘中转存父文件夹会自动将子项包含在其内部转存；
+      // 若子项也被放进 fids，网盘会额外将子文件独立平级转存一份，造成目录层级被打乱且出现未改名的重复文件。
+      const selectedIdSet = new Set(allSelected.map((x) => x.fileId));
+      const topLevelSelectedItems = allSelected.filter((item) => {
+        let parentFid = item.pdirFid;
+        while (parentFid && parentFid !== "0") {
+          if (selectedIdSet.has(parentFid)) {
+            return false; // 祖先已被选中转存，该项通过祖先容器转存，不可放入平级 fids
+          }
+          const parent = allSelected.find((x) => x.fileId === parentFid);
+          parentFid = parent?.pdirFid;
+        }
+        return true;
+      });
+
       const shareInfo = {
         ...this.shareInfo,
-        list: this.resourceSelect.filter((x) => x.isChecked),
+        list: topLevelSelectedItems.length > 0 ? topLevelSelectedItems : allSelected,
       };
 
-      const renames = this.resourceSelect
-        .filter((x) => x.isChecked && x.customName && x.customName.trim() !== x.fileName.trim())
+      const renames = allSelected
+        .filter((x) => x.customName && x.customName.trim() !== x.fileName.trim())
         .map((x) => ({
           fileId: x.fileId,
           originalName: x.fileName,

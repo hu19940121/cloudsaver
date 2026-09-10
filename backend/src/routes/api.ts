@@ -9,6 +9,7 @@ import { ImageController } from "../controllers/teleImages";
 import { SettingController } from "../controllers/setting";
 import { UserController } from "../controllers/user";
 import { SponsorsController } from "../controllers/sponsors";
+import { AIController } from "../controllers/ai";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ const imageController = container.get<ImageController>(TYPES.ImageController);
 const settingController = container.get<SettingController>(TYPES.SettingController);
 const userController = container.get<UserController>(TYPES.UserController);
 const sponsorsController = container.get<SponsorsController>(TYPES.SponsorsController);
+const aiController = container.get<AIController>(TYPES.AIController);
 
 // 用户相关路由
 router.post("/user/login", (req, res) => userController.login(req, res));
@@ -51,5 +53,9 @@ router.post("/quark/save", (req, res) => quarkController.saveFile(req, res));
 
 // 获取豆瓣热门列表
 router.get("/douban/hot", (req, res) => doubanController.getDoubanHotList(req, res));
+
+// AI 智能重命名相关
+router.post("/ai/test", (req, res) => aiController.test(req, res));
+router.post("/ai/rename", (req, res) => aiController.rename(req, res));
 
 export default router;

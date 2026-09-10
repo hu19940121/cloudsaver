@@ -9,6 +9,7 @@ export const TYPES = {
   UserService: Symbol.for("UserService"),
   SponsorsService: Symbol.for("SponsorsService"),
   JiaofuService: Symbol.for("JiaofuService"),
+  AIService: Symbol.for("AIService"),
 
   Cloud115Controller: Symbol.for("Cloud115Controller"),
   QuarkController: Symbol.for("QuarkController"),
@@ -18,4 +19,5 @@ export const TYPES = {
   SettingController: Symbol.for("SettingController"),
   UserController: Symbol.for("UserController"),
   SponsorsController: Symbol.for("SponsorsController"),
+  AIController: Symbol.for("AIController"),
 };

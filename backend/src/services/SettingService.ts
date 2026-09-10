@@ -20,6 +20,9 @@ export class SettingService {
         userId: userId.toString(),
         cloud115Cookie: "",
         quarkCookie: "",
+        aiApiUrl: "https://api.deepseek.com/v1",
+        aiApiKey: "",
+        aiModel: "deepseek-chat",
       });
     }
 

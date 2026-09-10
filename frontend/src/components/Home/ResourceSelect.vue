@@ -41,10 +41,37 @@
     <div class="select-header">
       <div class="select-info">
         <el-icon><Document /></el-icon>
-        <span>已选择 {{ selectedCount }} 个项目</span>
+        <span class="info-text">{{ selectInfoText }}</span>
+        <el-tooltip
+          v-if="selectedFolderCount > 0 && selectedFileCount === 0"
+          content="转存将自动包含该文件夹下的全部子文件"
+          placement="top"
+        >
+          <el-icon class="info-tip-icon"><InfoFilled /></el-icon>
+        </el-tooltip>
         <span v-if="totalSize" class="total-size">({{ formattedFileSize(totalSize) }})</span>
       </div>
       <div class="header-actions">
+        <el-button
+          v-if="hasRenamedItems"
+          type="info"
+          link
+          size="small"
+          @click="resetAllRenames"
+        >
+          还原
+        </el-button>
+        <el-button
+          type="success"
+          size="small"
+          plain
+          round
+          :disabled="currentList.length === 0"
+          @click="openAiRenameDialog"
+        >
+          <el-icon><MagicStick /></el-icon>
+          <span>AI 智能重命名</span>
+        </el-button>
         <el-button
           type="primary"
           link
@@ -52,7 +79,7 @@
           :disabled="currentList.length === 0"
           @click="handleSelectAll(!hasSelectedCurrentAll)"
         >
-          {{ hasSelectedCurrentAll ? "取消全选当前目录" : "全选当前目录" }}
+          {{ hasSelectedCurrentAll ? "取消全选" : "全选" }}
         </el-button>
       </div>
     </div>
@@ -141,6 +168,110 @@
         </div>
       </div>
     </div>
+
+    <!-- AI 智能重命名弹窗 -->
+    <el-dialog
+      v-model="aiDialogVisible"
+      title="AI 智能重命名 (影视标准化)"
+      width="680px"
+      append-to-body
+      destroy-on-close
+      class="ai-rename-dialog"
+    >
+      <div class="ai-rename-content">
+        <!-- 模式配置 -->
+        <div class="ai-config-box">
+          <div class="ai-option-item">
+            <span class="option-label">命名模式：</span>
+            <el-radio-group v-model="aiMode" size="small">
+              <el-radio-button label="auto">🤖 智能识别</el-radio-button>
+              <el-radio-button label="movie">🎬 电影标准</el-radio-button>
+              <el-radio-button label="tv">📺 电视剧/动漫</el-radio-button>
+              <el-radio-button label="clean">🧹 极简去广告</el-radio-button>
+            </el-radio-group>
+          </div>
+
+          <div class="ai-option-item">
+            <span class="option-label">处理范围：</span>
+            <el-radio-group v-model="aiScope" size="small">
+              <el-radio-button label="all_tree">🌐 全局穿透(全部层级)</el-radio-button>
+              <el-radio-button label="all">📂 当前目录 ({{ currentList.length }})</el-radio-button>
+              <el-radio-button label="selected">☑️ 仅已勾选 ({{ currentSelectedInDir.length }})</el-radio-button>
+            </el-radio-group>
+          </div>
+
+          <div class="ai-option-item">
+            <span class="option-label">特殊要求：</span>
+            <el-input
+              v-model="aiCustomPrompt"
+              placeholder="选填，如：指定剧名《庆余年》按 S02Exx 命名，去广告"
+              size="small"
+              clearable
+            />
+          </div>
+
+          <div class="ai-action-bar">
+            <el-button
+              type="primary"
+              size="small"
+              :icon="MagicStick"
+              :loading="isAiProcessing"
+              @click="handleStartAiRename"
+            >
+              {{ isAiProcessing ? "AI 深度分析重命名中..." : "开始 AI 分析重命名" }}
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 预览对比列表 -->
+        <div v-if="aiPreviewList.length > 0" class="ai-preview-section">
+          <div class="preview-header">
+            <h4>重命名预览与确认 ({{ aiPreviewList.length }} 项)</h4>
+            <span class="preview-tip">可直接在输入框修改微调，确认后应用</span>
+          </div>
+          <div class="preview-table-wrapper">
+            <el-table :data="aiPreviewList" size="small" max-height="240" border>
+              <el-table-column width="45" align="center">
+                <template #default="{ row }">
+                  <el-checkbox v-model="row.apply" />
+                </template>
+              </el-table-column>
+              <el-table-column label="类型" width="75" align="center">
+                <template #default="{ row }">
+                  <el-tag :type="row.isDir ? 'warning' : 'primary'" size="small">
+                    {{ row.isDir ? "文件夹" : "文件" }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="原名称 / 层级路径" min-width="190" show-overflow-tooltip>
+                <template #default="{ row }">
+                  <span v-if="row.path" style="color: #409eff; font-size: 11px; margin-right: 4px;">{{ row.path }} /</span>
+                  <span style="color: #909399; font-size: 12px;">{{ row.originalName }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="新文件名 (支持微调)" min-width="220">
+                <template #default="{ row }">
+                  <el-input v-model="row.newName" size="small" />
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="aiDialogVisible = false">取消</el-button>
+          <el-button
+            type="primary"
+            :disabled="aiPreviewList.filter(x => x.apply).length === 0"
+            @click="applyAiRename"
+          >
+            确认应用新名称 ({{ aiPreviewList.filter(x => x.apply).length }})
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -149,6 +280,8 @@ import { useResourceStore } from "@/stores/resource";
 import { formattedFileSize } from "@/utils/index";
 import { ref, computed, watch } from "vue";
 import type { ShareInfo, ResourceItem } from "@/types";
+import { aiApi } from "@/api/ai";
+import { ElMessage } from "element-plus";
 import {
   Document,
   Folder,
@@ -158,6 +291,8 @@ import {
   Edit,
   Check,
   Close,
+  MagicStick,
+  InfoFilled,
 } from "@element-plus/icons-vue";
 
 const props = defineProps<{
@@ -187,6 +322,9 @@ const currentList = ref<ShareInfo[]>([]);
 // 全局已选中项的 Map（以 fileId 为键，跨目录记忆已选）
 const selectedMap = ref<Map<string, ShareInfo>>(new Map());
 
+// 记忆所有重命名的 Map（以 fileId 为键，跨层级持久保留）
+const customNameMap = ref<Map<string, string>>(new Map());
+
 // 同步到 store
 function syncToStore() {
   const allSelected = Array.from(selectedMap.value.values());
@@ -196,23 +334,53 @@ function syncToStore() {
 // 初始化：首次进入时展示顶层文件
 watch(
   () => resourceStore.shareInfo.list,
-  (newList) => {
+  async (newList) => {
     if (newList && newList.length) {
-      currentList.value = [...newList];
+      currentList.value = newList.map((item) => {
+        const customName = customNameMap.value.get(item.fileId) || item.customName;
+        return { ...item, customName };
+      });
       // 默认将顶层项全部选中
       if (selectedMap.value.size === 0) {
         newList.forEach((item) => {
-          selectedMap.value.set(item.fileId, { ...item, isChecked: true });
+          const customName = customNameMap.value.get(item.fileId) || item.customName;
+          selectedMap.value.set(item.fileId, { ...item, customName, isChecked: true });
         });
         syncToStore();
+      }
+
+      // 如果顶层只有一个根文件夹，自动深入展开其内容，直接展示内部文件
+      if (
+        newList.length === 1 &&
+        newList[0].isDir &&
+        props.resource &&
+        pathHistory.value.length === 1
+      ) {
+        await enterFolder(newList[0]);
       }
     }
   },
   { immediate: true }
 );
 
-// 已选数量
-const selectedCount = computed(() => selectedMap.value.size);
+// 已选数量统计
+const selectedFolderCount = computed(() => {
+  return Array.from(selectedMap.value.values()).filter((x) => x.isDir).length;
+});
+const selectedFileCount = computed(() => {
+  return Array.from(selectedMap.value.values()).filter((x) => !x.isDir).length;
+});
+const selectInfoText = computed(() => {
+  const folders = selectedFolderCount.value;
+  const files = selectedFileCount.value;
+  if (folders > 0 && files > 0) {
+    return `已选 ${folders} 目录, ${files} 文件`;
+  }
+  if (folders > 0 && files === 0) {
+    return `已选 ${folders} 个文件夹`;
+  }
+  return `已选择 ${files} 项`;
+});
 
 // 已选总大小
 const totalSize = computed(() =>
@@ -238,7 +406,8 @@ const toggleSelect = (file: ShareInfo) => {
   if (selectedMap.value.has(file.fileId)) {
     selectedMap.value.delete(file.fileId);
   } else {
-    selectedMap.value.set(file.fileId, { ...file, isChecked: true });
+    const customName = customNameMap.value.get(file.fileId) || file.customName;
+    selectedMap.value.set(file.fileId, { ...file, customName, isChecked: true });
   }
   syncToStore();
 };
@@ -254,33 +423,38 @@ const handleRowClick = (file: ShareInfo) => {
 };
 
 // 进入子文件夹
-const enterFolder = async (folder: ShareInfo) => {
+async function enterFolder(folder: ShareInfo) {
   if (!props.resource) return;
   isLoading.value = true;
   try {
     const list = await resourceStore.fetchShareFolder(props.resource, folder.fileId);
     pathHistory.value.push({
-      name: folder.fileName,
+      name: folder.customName || folder.fileName,
       pdirFid: folder.fileId,
     });
 
     // 点入子级目录，默认全部自动勾选子目录里的全部文件
     list.forEach((item) => {
-      selectedMap.value.set(item.fileId, { ...item, isChecked: true });
+      const customName = customNameMap.value.get(item.fileId) || item.customName;
+      selectedMap.value.set(item.fileId, { ...item, customName, isChecked: true });
     });
     syncToStore();
 
-    currentList.value = list.map((item) => ({
-      ...item,
-      isChecked: true,
-    }));
+    currentList.value = list.map((item) => {
+      const customName = customNameMap.value.get(item.fileId) || item.customName;
+      return {
+        ...item,
+        customName,
+        isChecked: true,
+      };
+    });
   } finally {
     isLoading.value = false;
   }
-};
+}
 
 // 面包屑跳转
-const navigateTo = async (targetIdx: number) => {
+async function navigateTo(targetIdx: number) {
   if (!props.resource || targetIdx >= pathHistory.value.length - 1) return;
   const targetNode = pathHistory.value[targetIdx];
   isLoading.value = true;
@@ -293,26 +467,34 @@ const navigateTo = async (targetIdx: number) => {
       list = await resourceStore.fetchShareFolder(props.resource, targetNode.pdirFid);
     }
     pathHistory.value = pathHistory.value.slice(0, targetIdx + 1);
-    currentList.value = list.map((item) => ({
-      ...item,
-      isChecked: isChecked(item.fileId),
-    }));
+    currentList.value = list.map((item) => {
+      const customName =
+        customNameMap.value.get(item.fileId) ||
+        selectedMap.value.get(item.fileId)?.customName ||
+        item.customName;
+      return {
+        ...item,
+        customName,
+        isChecked: isChecked(item.fileId),
+      };
+    });
   } finally {
     isLoading.value = false;
   }
-};
+}
 
 // 返回上一级
-const goBack = async () => {
+async function goBack() {
   if (pathHistory.value.length <= 1) return;
   await navigateTo(pathHistory.value.length - 2);
-};
+}
 
 // 全选/取消全选当前目录
 const handleSelectAll = (checked: boolean) => {
   currentList.value.forEach((file) => {
     if (checked) {
-      selectedMap.value.set(file.fileId, { ...file, isChecked: true });
+      const customName = customNameMap.value.get(file.fileId) || file.customName;
+      selectedMap.value.set(file.fileId, { ...file, customName, isChecked: true });
     } else {
       selectedMap.value.delete(file.fileId);
     }
@@ -331,6 +513,7 @@ const saveEdit = (file: ShareInfo) => {
   if (!editingName.value.trim()) return;
   const newName = editingName.value.trim();
   file.customName = newName;
+  customNameMap.value.set(file.fileId, newName);
   if (selectedMap.value.has(file.fileId)) {
     const item = selectedMap.value.get(file.fileId)!;
     item.customName = newName;
@@ -343,6 +526,214 @@ const saveEdit = (file: ShareInfo) => {
 // 取消编辑
 const cancelEdit = () => {
   editingFileId.value = null;
+};
+
+// ==================== AI 智能重命名逻辑 ====================
+const aiDialogVisible = ref(false);
+const aiMode = ref<"auto" | "movie" | "tv" | "clean">("auto");
+const aiScope = ref<"all_tree" | "current" | "selected">("all_tree");
+const aiCustomPrompt = ref("");
+const isAiProcessing = ref(false);
+
+interface PreviewItem {
+  id: string;
+  originalName: string;
+  newName: string;
+  isDir: boolean;
+  path: string;
+  apply: boolean;
+  itemRef?: ShareInfo;
+}
+
+const aiPreviewList = ref<PreviewItem[]>([]);
+
+// 当前目录下已选中的项目
+const currentSelectedInDir = computed(() => {
+  return currentList.value.filter((item) => selectedMap.value.has(item.fileId));
+});
+
+// 是否存在已改名项目
+const hasRenamedItems = computed(() => {
+  return currentList.value.some(
+    (x) => x.customName && x.customName.trim() !== x.fileName.trim()
+  );
+});
+
+// 还原当前目录下所有改名
+const resetAllRenames = () => {
+  currentList.value.forEach((item) => {
+    delete item.customName;
+    customNameMap.value.delete(item.fileId);
+    if (selectedMap.value.has(item.fileId)) {
+      const selected = selectedMap.value.get(item.fileId)!;
+      delete selected.customName;
+      selectedMap.value.set(item.fileId, { ...selected });
+    }
+  });
+  syncToStore();
+  ElMessage.info("已还原默认名称");
+};
+
+// 打开 AI 重命名弹窗
+const openAiRenameDialog = () => {
+  aiCustomPrompt.value = "";
+  aiPreviewList.value = [];
+  // 默认推荐全局穿透重命名全部层级，一次性解决全部文件
+  aiScope.value = "all_tree";
+  aiDialogVisible.value = true;
+};
+
+// 递归获取整个分享资源树的所有项目（含所有子文件夹及文件）
+interface ScannedItem {
+  id: string;
+  name: string;
+  isDir: boolean;
+  path: string;
+  itemRef?: ShareInfo;
+}
+
+const fetchAllShareItemsRecursively = async (): Promise<ScannedItem[]> => {
+  const result: ScannedItem[] = [];
+  const rootList = resourceStore.shareInfo.list || [];
+
+  async function traverse(items: ShareInfo[], currentPath: string) {
+    for (const item of items) {
+      result.push({
+        id: item.fileId,
+        name: customNameMap.value.get(item.fileId) || item.customName || item.fileName,
+        isDir: !!item.isDir,
+        path: currentPath,
+        itemRef: item,
+      });
+
+      if (item.isDir && props.resource) {
+        try {
+          const children = await resourceStore.fetchShareFolder(props.resource, item.fileId);
+          if (children && children.length > 0) {
+            const folderName =
+              customNameMap.value.get(item.fileId) || item.customName || item.fileName;
+            const nextPath = currentPath ? `${currentPath}/${folderName}` : folderName;
+            await traverse(children, nextPath);
+          }
+        } catch (e) {
+          console.warn("递归获取子目录失败:", item.fileName, e);
+        }
+      }
+    }
+  }
+
+  await traverse(rootList, "");
+  return result;
+};
+
+// 开始 AI 重命名分析
+const handleStartAiRename = async () => {
+  isAiProcessing.value = true;
+  try {
+    let targetItems: ScannedItem[] = [];
+
+    if (aiScope.value === "all_tree") {
+      targetItems = await fetchAllShareItemsRecursively();
+    } else if (aiScope.value === "selected") {
+      targetItems = currentSelectedInDir.value.map((item) => ({
+        id: item.fileId,
+        name: customNameMap.value.get(item.fileId) || item.customName || item.fileName,
+        isDir: !!item.isDir,
+        path: "",
+        itemRef: item,
+      }));
+    } else {
+      targetItems = currentList.value.map((item) => ({
+        id: item.fileId,
+        name: customNameMap.value.get(item.fileId) || item.customName || item.fileName,
+        isDir: !!item.isDir,
+        path: "",
+        itemRef: item,
+      }));
+    }
+
+    if (targetItems.length === 0) {
+      ElMessage.warning(
+        aiScope.value === "selected" ? "请先在列表中勾选需要重命名的文件" : "没有找到可处理的项目"
+      );
+      return;
+    }
+
+    const res = await aiApi.renameFiles({
+      items: targetItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        isDir: item.isDir,
+      })),
+      mode: aiMode.value,
+      customPrompt: aiCustomPrompt.value,
+    });
+
+    if (res.data && res.data.length > 0) {
+      const targetMap = new Map<string, ScannedItem>();
+      targetItems.forEach((t) => targetMap.set(t.id, t));
+
+      aiPreviewList.value = res.data.map((item) => {
+        const originalMeta = targetMap.get(item.id);
+        return {
+          id: item.id,
+          originalName: item.originalName,
+          newName: item.newName,
+          isDir: originalMeta ? originalMeta.isDir : false,
+          path: originalMeta ? originalMeta.path : "",
+          apply: true,
+          itemRef: originalMeta?.itemRef,
+        };
+      });
+      ElMessage.success(`AI 分析完成，共识别 ${aiPreviewList.value.length} 项，请核对预览后应用`);
+    } else {
+      ElMessage.warning("未能获取到重命名结果");
+    }
+  } catch (error: any) {
+    ElMessage.error(error.message || "AI 分析失败，请确认【设置】中的 AI 配置");
+  } finally {
+    isAiProcessing.value = false;
+  }
+};
+
+// 确认应用 AI 重命名
+const applyAiRename = () => {
+  const applyMap = new Map<string, string>();
+  aiPreviewList.value.forEach((p) => {
+    if (p.apply && p.newName.trim()) {
+      applyMap.set(p.id, p.newName.trim());
+      customNameMap.value.set(p.id, p.newName.trim());
+    }
+  });
+
+  // 同步当前视图列表
+  currentList.value.forEach((file) => {
+    if (applyMap.has(file.fileId)) {
+      file.customName = applyMap.get(file.fileId)!;
+    }
+  });
+
+  // 同步已选集合
+  selectedMap.value.forEach((item, fileId) => {
+    if (applyMap.has(fileId)) {
+      item.customName = applyMap.get(fileId)!;
+    }
+  });
+
+  // 如果包含全局子层级项，确保对应子项也加入 selectedMap，使转存时全量带上重命名
+  aiPreviewList.value.forEach((p) => {
+    if (p.apply && p.itemRef && !selectedMap.value.has(p.id)) {
+      selectedMap.value.set(p.id, {
+        ...p.itemRef,
+        customName: p.newName.trim(),
+        isChecked: true,
+      });
+    }
+  });
+
+  syncToStore();
+  aiDialogVisible.value = false;
+  ElMessage.success(`成功为 ${applyMap.size} 个项目 (含子层级) 应用新名称`);
 };
 </script>
 
@@ -442,9 +833,9 @@ const cancelEdit = () => {
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
 
-      :deep(.el-button) {
+      :deep(.el-button.is-link) {
         padding: 0;
         font-size: 13px;
       }
@@ -557,6 +948,69 @@ const cancelEdit = () => {
           gap: 2px;
         }
       }
+    }
+  }
+}
+
+.ai-rename-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .ai-config-box {
+    background: var(--el-fill-color-light, #f5f7fa);
+    padding: 14px 16px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .ai-option-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .option-label {
+        width: 80px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--el-text-color-regular);
+        flex-shrink: 0;
+      }
+    }
+
+    .ai-action-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+  }
+
+  .ai-preview-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+
+      h4 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .preview-tip {
+        font-size: 12px;
+        color: var(--el-text-color-secondary);
+      }
+    }
+
+    .preview-table-wrapper {
+      border-radius: 6px;
+      overflow: hidden;
     }
   }
 }

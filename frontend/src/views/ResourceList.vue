@@ -109,7 +109,7 @@
       v-if="currentResource"
       v-model="saveDialogVisible"
       :title="saveDialogMap[saveDialogStep].title"
-      width="580px"
+      width="720px"
       destroy-on-close
     >
       <template #header="{ titleId }">
@@ -509,7 +509,7 @@ onBeforeUnmount(() => {
     }
 
     .resource-title {
-      max-width: 300px;
+      max-width: 520px;
       @include text-ellipsis;
     }
   }

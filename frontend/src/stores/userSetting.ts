@@ -13,6 +13,9 @@ export const useUserSettingStore = defineStore("user", {
     userSettings: {
       cloud115Cookie: "",
       quarkCookie: "",
+      aiApiUrl: "https://api.deepseek.com/v1",
+      aiApiKey: "",
+      aiModel: "deepseek-chat",
     },
     displayStyle: (localStorage.getItem("display_style") as "table" | "card") || "card",
     imagesSource: (localStorage.getItem("images_source") as "proxy" | "local") || "proxy",

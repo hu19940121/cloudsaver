@@ -104,6 +104,50 @@
       </div>
     </div>
 
+    <!-- AI 智能命名配置 -->
+    <div class="setting__section">
+      <div class="setting__title" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>AI 智能命名配置</span>
+        <van-button
+          size="mini"
+          type="success"
+          plain
+          round
+          :loading="isTestingAi"
+          @click="handleTestAi"
+        >
+          测试连接
+        </van-button>
+      </div>
+      <div class="setting__card">
+        <van-cell-group inset>
+          <van-field
+            v-model="localUserSettings.aiApiUrl"
+            label="API 地址"
+            placeholder="默认: https://api.deepseek.com/v1"
+          />
+          <van-field
+            v-model="localUserSettings.aiModel"
+            label="模型名称"
+            placeholder="默认: deepseek-chat"
+          />
+          <van-field
+            v-model="localUserSettings.aiApiKey"
+            :type="showAiApiKey ? 'text' : 'password'"
+            label="API Key"
+            placeholder="请输入 API Key"
+          >
+            <template #right-icon>
+              <van-icon
+                :name="showAiApiKey ? 'eye-o' : 'closed-eye'"
+                @click="showAiApiKey = !showAiApiKey"
+              />
+            </template>
+          </van-field>
+        </van-cell-group>
+      </div>
+    </div>
+
     <!-- 保存按钮 -->
     <div class="setting__submit">
       <van-button round block type="primary" @click="handleSave"> 保存设置 </van-button>
@@ -116,6 +160,7 @@ import { useUserSettingStore } from "@/stores/userSetting";
 import { ref, watch } from "vue";
 import { showNotify } from "vant";
 import type { GlobalSettingAttributes, UserSettingAttributes } from "@/types/user";
+import { aiApi } from "@/api/ai";
 
 const settingStore = useUserSettingStore();
 
@@ -133,12 +178,41 @@ const localGlobalSetting = ref<GlobalSettingAttributes>({
 const localUserSettings = ref<UserSettingAttributes>({
   cloud115Cookie: "",
   quarkCookie: "",
+  aiApiUrl: "https://api.deepseek.com/v1",
+  aiApiKey: "",
+  aiModel: "deepseek-chat",
 });
 
 // 添加显示/隐藏密码的状态
 const showCloud115Cookie = ref(false);
 const showQuarkCookie = ref(false);
 const showJiaofuCookie = ref(false);
+const showAiApiKey = ref(false);
+const isTestingAi = ref(false);
+
+const handleTestAi = async () => {
+  if (!localUserSettings.value.aiApiKey) {
+    showNotify({ type: "warning", message: "请先填写 AI API Key" });
+    return;
+  }
+  isTestingAi.value = true;
+  try {
+    const res = await aiApi.testConnection({
+      aiApiUrl: localUserSettings.value.aiApiUrl,
+      aiApiKey: localUserSettings.value.aiApiKey,
+      aiModel: localUserSettings.value.aiModel,
+    });
+    if (res.code === 0) {
+      showNotify({ type: "success", message: res.message || "AI 测试连接成功！" });
+    } else {
+      showNotify({ type: "danger", message: res.message || "测试失败" });
+    }
+  } catch (error: any) {
+    showNotify({ type: "danger", message: error.message || "连接失败" });
+  } finally {
+    isTestingAi.value = false;
+  }
+};
 
 // 监听 store 变化
 watch(

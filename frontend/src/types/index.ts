@@ -135,4 +135,7 @@ export interface GlobalSettingAttributes {
 export interface UserSettingAttributes {
   cloud115Cookie: string;
   quarkCookie: string;
+  aiApiUrl?: string;
+  aiApiKey?: string;
+  aiModel?: string;
 }

@@ -12,6 +12,7 @@ import { ImageService } from "./services/ImageService";
 import { SettingService } from "./services/SettingService";
 import { SponsorsService } from "./services/SponsorsService";
 import { JiaofuService } from "./services/JiaofuService";
+import { AIService } from "./services/AIService";
 // Controllers
 import { Cloud115Controller } from "./controllers/cloud115";
 import { QuarkController } from "./controllers/quark";
@@ -21,6 +22,7 @@ import { ImageController } from "./controllers/teleImages";
 import { SettingController } from "./controllers/setting";
 import { UserController } from "./controllers/user";
 import { SponsorsController } from "./controllers/sponsors";
+import { AIController } from "./controllers/ai";
 const container = new Container();
 
 // Services
@@ -34,6 +36,7 @@ container.bind<DoubanService>(TYPES.DoubanService).to(DoubanService).inSingleton
 container.bind<UserService>(TYPES.UserService).to(UserService).inSingletonScope();
 container.bind<SponsorsService>(TYPES.SponsorsService).to(SponsorsService).inSingletonScope();
 container.bind<JiaofuService>(TYPES.JiaofuService).to(JiaofuService).inSingletonScope();
+container.bind<AIService>(TYPES.AIService).to(AIService).inSingletonScope();
 // Controllers
 container.bind<Cloud115Controller>(TYPES.Cloud115Controller).to(Cloud115Controller);
 container.bind<QuarkController>(TYPES.QuarkController).to(QuarkController);
@@ -43,5 +46,6 @@ container.bind<ImageController>(TYPES.ImageController).to(ImageController);
 container.bind<SettingController>(TYPES.SettingController).to(SettingController);
 container.bind<UserController>(TYPES.UserController).to(UserController);
 container.bind<SponsorsController>(TYPES.SponsorsController).to(SponsorsController);
+container.bind<AIController>(TYPES.AIController).to(AIController);
 
 export { container };
