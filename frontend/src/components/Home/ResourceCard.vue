@@ -1,5 +1,5 @@
 <template>
-  <div class="resource-card">
+  <div class="resource-card-container">
     <!-- 详情弹窗 -->
     <el-dialog
       v-model="showDetail"
@@ -16,8 +16,8 @@
             :fit="currentResource.image ? 'cover' : 'contain'"
           >
             <template #error>
-              <div class="image-slot" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;background:#f5f7fa;">
-                <el-image :src="defaultImage" fit="contain" style="width: 50%; opacity: 0.7;" />
+              <div class="image-slot fallback-cover">
+                <el-image :src="defaultImage" fit="contain" style="width: 45%; opacity: 0.6;" />
               </div>
             </template>
           </el-image>
@@ -32,157 +32,205 @@
         </div>
         <div class="detail-info">
           <h3 class="detail-title">
-            <el-link :href="currentResource.cloudLinks[0]" target="_blank" :underline="false">
+            <a :href="currentResource.cloudLinks[0]" target="_blank">
               {{ currentResource.title }}
-            </el-link>
+            </a>
           </h3>
           <div class="detail-description" v-html="currentResource.content" />
           <div v-if="currentResource.tags?.length" class="detail-tags">
             <div class="tags-list">
-              <el-tag
+              <span
                 v-for="tag in currentResource.tags"
                 :key="tag"
                 class="tag-item"
                 @click="searchMovieforTag(tag)"
               >
-                {{ tag }}
-              </el-tag>
+                #{{ tag }}
+              </span>
             </div>
           </div>
         </div>
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" plain @click="currentResource && handleJump(currentResource)"
-            >跳转</el-button
-          >
+          <el-button plain @click="currentResource && handleJump(currentResource)">
+            <span>直达链接</span>
+            <el-icon><TopRight /></el-icon>
+          </el-button>
           <el-button
             v-if="currentResource?.isSupportSave"
             type="primary"
             @click="currentResource && handleSave(currentResource)"
-            >转存</el-button
           >
+            <el-icon><FolderAdd /></el-icon>
+            <span>一键转存</span>
+          </el-button>
         </div>
       </template>
     </el-dialog>
 
-    <div v-for="group in store.resources" :key="group.id" class="resource-group">
+    <!-- 频道分组卡片列表 -->
+    <div
+      v-for="group in store.resources"
+      :key="group.id"
+      class="channel-group"
+    >
+      <!-- 分组头部 -->
       <div
-        :class="{ 'group-header': true, 'is-active': group.displayList }"
+        class="group-header"
+        :class="{ 'is-collapsed': !group.displayList }"
         @click="group.displayList = !group.displayList"
       >
-        <el-link
-          class="group-title"
-          :href="`https://t.me/s/${group.id}`"
-          target="_blank"
-          :underline="false"
-          @click.stop
-        >
+        <div class="group-left">
           <el-image
             :src="getProxyImageUrl(group.channelInfo.channelLogo)"
             :fit="group.channelInfo.channelLogo ? 'cover' : 'contain'"
-            class="channel-logo"
-            scroll-container="#pc-resources-content"
+            class="channel-avatar"
             loading="lazy"
-          />
-          <span>{{ group.channelInfo.name }}</span>
-          <span class="item-count">({{ group.list.length }})</span>
-        </el-link>
+          >
+            <template #error>
+              <div class="avatar-fallback">
+                <el-icon><Picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
+          <div class="channel-info">
+            <span class="channel-name">{{ group.channelInfo.name }}</span>
+            <span class="channel-badge">{{ group.list.length }} 条资源</span>
+          </div>
+        </div>
 
-        <el-tooltip effect="dark" :content="group.displayList ? '收起' : '展开'" placement="top">
-          <el-button class="toggle-btn" type="text">
-            <el-icon :class="{ 'is-active': group.displayList }">
-              <ArrowDown />
-            </el-icon>
-          </el-button>
-        </el-tooltip>
+        <div class="group-right">
+          <el-link
+            class="tg-link"
+            :href="`https://t.me/s/${group.id}`"
+            target="_blank"
+            :underline="false"
+            @click.stop
+          >
+            <span>访问频道</span>
+            <el-icon><TopRight /></el-icon>
+          </el-link>
+          <div class="expand-btn" :class="{ 'is-active': group.displayList }">
+            <el-icon><ArrowDown /></el-icon>
+          </div>
+        </div>
       </div>
 
-      <div v-if="group.displayList" class="group-content">
-        <div class="card-grid">
-          <el-card
-            v-for="resource in group.list"
-            :key="resource.messageId"
-            class="resource-card-item"
-            :body-style="{ padding: '0' }"
-          >
-            <div class="card-wrapper">
-              <div class="card-cover">
+      <!-- 分组卡片网格 -->
+      <transition name="fade">
+        <div v-if="group.displayList" class="group-body">
+          <div class="card-grid">
+            <div
+              v-for="resource in group.list"
+              :key="resource.messageId"
+              class="resource-card-item"
+            >
+              <!-- 封面区 -->
+              <div class="card-cover-box" @click="showResourceDetail(resource)">
                 <el-image
                   loading="lazy"
-                  class="cover-image"
+                  class="cover-img"
                   :src="getProxyImageUrl(resource.image as string)"
-                  :fit="resource.image ? 'cover' : 'contain'"
+                  fit="cover"
                   :alt="resource.title"
-                  @click="showResourceDetail(resource)"
                 >
                   <template #error>
-                    <div class="image-slot" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;background:#f5f7fa;">
-                      <el-image :src="defaultImage" fit="contain" style="width: 50%; opacity: 0.7;" />
+                    <div class="image-fallback">
+                      <el-image :src="defaultImage" fit="contain" style="width: 50%; opacity: 0.5;" />
                     </div>
                   </template>
                 </el-image>
-                <el-tag
-                  class="cloud-type"
-                  :type="store.tagColor[resource.cloudType as keyof TagColor]"
-                  effect="dark"
-                  round
-                  size="small"
-                >
-                  {{ resource.cloudType }}
-                </el-tag>
+
+                <!-- 右上角悬浮云盘标签 -->
+                <div class="cloud-pill">
+                  <el-tag
+                    :type="store.tagColor[resource.cloudType as keyof TagColor]"
+                    effect="dark"
+                    round
+                    size="small"
+                  >
+                    {{ resource.cloudType }}
+                  </el-tag>
+                </div>
+
+                <!-- Hover 悬浮预览遮罩 -->
+                <div class="cover-hover-mask">
+                  <span class="preview-text">点击查看详情</span>
+                </div>
               </div>
 
-              <div class="card-body">
-                <el-link
+              <!-- 卡片主体内容 -->
+              <div class="card-info-box">
+                <a
                   class="card-title"
                   :href="resource.cloudLinks[0]"
                   target="_blank"
-                  :underline="false"
+                  :title="resource.title"
                 >
                   {{ resource.title }}
-                </el-link>
+                </a>
 
                 <div
-                  class="card-content"
+                  class="card-snippet"
                   @click="showResourceDetail(resource)"
                   v-html="resource.content"
                 />
 
                 <div v-if="resource.tags?.length" class="card-tags">
-                  <div class="tags-list">
-                    <el-tag
-                      v-for="tag in resource.tags"
-                      :key="tag"
-                      class="tag-item"
-                      @click="searchMovieforTag(tag)"
-                    >
-                      {{ tag }}
-                    </el-tag>
-                  </div>
+                  <span
+                    v-for="tag in resource.tags.slice(0, 4)"
+                    :key="tag"
+                    class="tag-chip"
+                    @click.stop="searchMovieforTag(tag)"
+                  >
+                    #{{ tag }}
+                  </span>
+                  <span v-if="resource.tags.length > 4" class="tag-more">
+                    +{{ resource.tags.length - 4 }}
+                  </span>
                 </div>
 
-                <div class="card-footer">
-                  <el-button type="primary" plain @click="handleJump(resource)">跳转</el-button>
+                <!-- 底部操作按钮 -->
+                <div class="card-action-bar">
+                  <el-button
+                    type="default"
+                    size="small"
+                    class="btn-jump"
+                    @click.stop="handleJump(resource)"
+                  >
+                    <span>直达</span>
+                    <el-icon><TopRight /></el-icon>
+                  </el-button>
                   <el-button
                     v-if="resource.isSupportSave"
                     type="primary"
-                    @click="handleSave(resource)"
-                    >转存</el-button
+                    size="small"
+                    class="btn-save"
+                    @click.stop="handleSave(resource)"
                   >
+                    <el-icon><FolderAdd /></el-icon>
+                    <span>转存</span>
+                  </el-button>
                 </div>
               </div>
             </div>
-          </el-card>
-        </div>
+          </div>
 
-        <div class="load-more">
-          <el-button :loading="group.loading" @click="handleLoadMore(group.id)">
-            <el-icon><Plus /></el-icon>
-            加载更多
-          </el-button>
+          <!-- 加载更多 -->
+          <div class="load-more-container">
+            <el-button
+              class="load-more-btn"
+              round
+              :loading="group.loading"
+              @click="handleLoadMore(group.id)"
+            >
+              <el-icon><Plus /></el-icon>
+              <span>加载更多资源</span>
+            </el-button>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -191,7 +239,13 @@
 import { useResourceStore } from "@/stores/resource";
 import { ref } from "vue";
 import type { ResourceItem, TagColor } from "@/types";
-import { ArrowDown, Plus } from "@element-plus/icons-vue";
+import {
+  ArrowDown,
+  Plus,
+  TopRight,
+  Picture,
+  FolderAdd,
+} from "@element-plus/icons-vue";
 import { getProxyImageUrl, defaultImage } from "@/utils/image";
 
 const store = useResourceStore();
@@ -229,401 +283,421 @@ const handleLoadMore = (channelId: string) => {
 <style lang="scss" scoped>
 @use "@/styles/common.scss" as *;
 
-.resource-card {
-  position: relative;
-  height: 100%;
+.resource-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
 
-  // 资源组
-  .resource-group {
-    background: var(--theme-card-bg);
-    backdrop-filter: var(--theme-blur);
-    -webkit-backdrop-filter: var(--theme-blur);
-    margin-bottom: 24px;
-    border-radius: var(--theme-radius);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    transition: var(--theme-transition);
+.channel-group {
+  background: var(--theme-card-bg, #ffffff);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
 
-    &:last-child {
-      margin-bottom: 100px;
-    }
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  }
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  background: rgba(248, 249, 252, 0.75);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(240, 244, 250, 0.9);
   }
 
-  // 组标题
-  .group-header {
-    @include flex-center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    position: sticky;
-    top: 0;
-    background: var(--theme-card-bg);
-    backdrop-filter: var(--theme-blur);
-    -webkit-backdrop-filter: var(--theme-blur);
-    z-index: 10;
-    border-radius: var(--theme-radius);
-    overflow: hidden;
-    cursor: pointer;
-
-    &.is-active {
-      border-radius: var(--theme-radius) var(--theme-radius) 0 0;
-    }
-
-    .group-title {
-      @include flex-center;
-      gap: 12px;
-      font-size: 16px;
-      color: var(--theme-text-primary);
-      transition: var(--theme-transition);
-
-      .channel-logo {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        overflow: hidden;
-        box-shadow: var(--theme-shadow-sm);
-        margin-right: 8px;
-      }
-
-      .item-count {
-        font-size: 13px;
-        color: var(--theme-text-secondary);
-      }
-
-      &:hover {
-        color: var(--theme-primary);
-        transform: translateY(-1px);
-      }
-    }
-
-    .toggle-btn {
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      color: var(--theme-text-regular);
-      transition: var(--theme-transition);
-
-      .el-icon {
-        font-size: 16px;
-        transition: transform 0.3s ease;
-
-        &.is-active {
-          transform: rotate(180deg);
-        }
-      }
-
-      &:hover {
-        color: var(--theme-primary);
-        transform: translateY(-1px);
-      }
-    }
+  &.is-collapsed {
+    border-bottom: none;
   }
 
-  // 组内容
-  .group-content {
-    padding: 20px;
-  }
+  .group-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 
-  // 卡片网格
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 24px;
-    grid-auto-rows: min-content;
-  }
-
-  // 资源卡片
-  .resource-card-item {
-    border-radius: var(--theme-radius);
-    transition: var(--theme-transition);
-    overflow: hidden;
-    max-width: 460px;
-    margin: 0 auto;
-    width: 100%;
-    height: fit-content;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--theme-shadow);
-    }
-
-    .card-wrapper {
-      display: flex;
-      gap: 20px;
-      padding: 16px;
-      height: 100%;
-    }
-
-    .card-cover {
-      position: relative;
-      width: 120px;
-      height: 180px;
+    .channel-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       flex-shrink: 0;
 
-      .cover-image {
+      .avatar-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        border-radius: var(--theme-radius);
-        cursor: pointer;
-        transition: opacity 0.3s ease;
-
-        &:hover {
-          opacity: 0.85;
-        }
-      }
-
-      .cloud-type {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        z-index: 1;
+        background: #e4e7ed;
+        color: #909399;
       }
     }
 
-    .card-body {
-      flex: 1;
-      min-width: 0;
+    .channel-info {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
+      align-items: center;
+      gap: 10px;
 
-      .card-title {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+      .channel-name {
         font-size: 16px;
-        line-height: 1.5;
-        color: var(--theme-text-primary);
-        word-break: break-word;
-        height: 3em;
-        transition: var(--theme-transition);
-
-        &:hover {
-          color: var(--theme-primary);
-        }
+        font-weight: 600;
+        color: #1f2329;
       }
 
-      .card-content {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        font-size: 14px;
-        line-height: 1.6;
-        color: var(--theme-text-regular);
-        cursor: pointer;
-        transition: color 0.3s ease;
-
-        &:hover {
-          color: var(--theme-text-primary);
-        }
+      .channel-badge {
+        font-size: 11px;
+        font-weight: 500;
+        color: #909399;
+        background: #f0f2f5;
+        padding: 2px 8px;
+        border-radius: 10px;
       }
+    }
+  }
 
-      .card-tags {
-        margin-top: auto;
-        max-height: 88px;
-        overflow: hidden;
+  .group-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 
-        .tags-label {
-          font-size: 13px;
-          color: var(--theme-text-secondary);
-          margin-right: 8px;
-          display: block;
-          margin-bottom: 8px;
-        }
+    .tg-link {
+      font-size: 13px;
+      color: #909399;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s;
 
-        .tags-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          max-height: 72px;
-          overflow: hidden;
-
-          .tag-item {
-            cursor: pointer;
-            transition: var(--theme-transition);
-            margin: 0;
-            height: 24px;
-
-            &:hover {
-              color: var(--theme-primary);
-              border-color: var(--theme-primary);
-              transform: translateY(-1px);
-            }
-          }
-        }
+      &:hover {
+        color: var(--theme-primary, #409eff);
       }
     }
 
-    .card-footer {
-      @include flex-center;
-      justify-content: flex-end;
-      margin-top: 8px;
+    .expand-btn {
+      font-size: 16px;
+      color: #909399;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-      .el-button {
-        padding: 6px 16px;
-        font-size: 14px;
-        height: 32px;
-        min-width: 80px;
+      &.is-active {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+.group-body {
+  padding: 20px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.resource-card-item {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    border-color: rgba(64, 158, 255, 0.3);
+
+    .cover-img {
+      transform: scale(1.05);
+    }
+
+    .cover-hover-mask {
+      opacity: 1;
+    }
+  }
+
+  .card-cover-box {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: #f5f7fa;
+    cursor: pointer;
+
+    .cover-img {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s ease;
+    }
+
+    .image-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f2f4f7, #e5e9f2);
+    }
+
+    .cloud-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+
+      :deep(.el-tag) {
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    .cover-hover-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      backdrop-filter: blur(2px);
+      z-index: 1;
+
+      .preview-text {
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 5px 12px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 20px;
+      }
+    }
+  }
+
+  .card-info-box {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2329;
+      line-height: 1.4;
+      text-decoration: none;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      max-height: 42px;
+      transition: color 0.2s;
+
+      &:hover {
+        color: var(--theme-primary, #409eff);
+      }
+    }
+
+    .card-snippet {
+      font-size: 12px;
+      color: #86909c;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      max-height: 36px;
+      cursor: pointer;
+
+      :deep(p) {
+        margin: 0;
+        display: inline;
+      }
+      :deep(br) {
+        display: none;
+      }
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 4px;
+
+      .tag-chip {
+        font-size: 11px;
+        color: #409eff;
+        background: rgba(64, 158, 255, 0.08);
+        padding: 1px 7px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #409eff;
+          color: #ffffff;
+        }
+      }
+
+      .tag-more {
+        font-size: 11px;
+        color: #909399;
+      }
+    }
+
+    .card-action-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
+
+      .btn-jump {
+        flex: 1;
+        border-radius: 8px;
+        color: #606266;
+
+        &:hover {
+          color: var(--theme-primary, #409eff);
+          border-color: var(--theme-primary, #409eff);
+          background: rgba(64, 158, 255, 0.04);
+        }
+      }
+
+      .btn-save {
+        flex: 1.3;
+        font-weight: 600;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(64, 158, 255, 0.25);
+        transition: all 0.2s;
 
         &:hover {
           transform: translateY(-1px);
-          box-shadow: var(--theme-shadow-sm);
+          box-shadow: 0 4px 12px rgba(64, 158, 255, 0.35);
         }
       }
     }
   }
+}
 
-  // 加载更多
-  .load-more {
-    @include flex-center;
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+
+  .load-more-btn {
+    padding: 10px 28px;
+    font-size: 13px;
+    color: #606266;
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s;
+
+    &:hover {
+      color: var(--theme-primary, #409eff);
+      border-color: var(--theme-primary, #409eff);
+      background: #f0f7ff;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// 详情弹窗
+.detail-content {
+  display: flex;
+  gap: 20px;
+
+  .detail-cover {
+    width: 180px;
+    height: 250px;
     position: relative;
-    padding: 32px 0 8px;
-    margin-top: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
 
-    &::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        var(--el-border-color-lighter) 20%,
-        var(--el-border-color-lighter) 80%,
-        transparent
-      );
+    .cover-image {
+      width: 100%;
+      height: 100%;
     }
 
-    .el-button {
-      min-width: 160px;
-      height: 40px;
-      border-radius: 20px;
-      font-size: 14px;
-      color: var(--theme-text-regular);
-      background: var(--theme-card-bg);
-      border: 1px solid var(--el-border-color-lighter);
-      transition: var(--theme-transition);
-      position: relative;
-      overflow: hidden;
-
-      &::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transform: translateX(-100%);
-        transition: transform 0.6s ease;
-      }
-
-      &:hover {
-        color: var(--theme-primary);
-        border-color: var(--theme-primary);
-        background: var(--el-color-primary-light-9);
-
-        &::after {
-          transform: translateX(100%);
-        }
-      }
-
-      &.is-loading {
-        color: var(--theme-text-secondary);
-
-        &::after {
-          display: none;
-        }
-      }
-
-      .el-icon {
-        margin-right: 6px;
-        font-size: 16px;
-      }
+    .cloud-type {
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
   }
 
-  // 详情弹窗样式
-  .resource-detail-dialog {
-    :deep(.el-dialog__body) {
-      padding: 20px;
-    }
+  .detail-info {
+    flex: 1;
+    min-width: 0;
 
-    .detail-content {
-      display: flex;
-      gap: 24px;
-    }
+    .detail-title {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 600;
 
-    .detail-cover {
-      position: relative;
-      width: 200px;
-      flex-shrink: 0;
-
-      .cover-image {
-        width: 100%;
-        height: 300px;
-        border-radius: var(--theme-radius);
-        overflow: hidden;
-      }
-
-      .cloud-type {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        z-index: 1;
-      }
-    }
-
-    .detail-info {
-      flex: 1;
-      min-width: 0;
-
-      .detail-title {
-        font-size: 18px;
-        margin: 0 0 16px;
-        line-height: 1.5;
-        color: var(--theme-text-primary);
-      }
-
-      .detail-description {
-        font-size: 14px;
-        line-height: 1.6;
-        color: var(--theme-text-regular);
-        margin-bottom: 20px;
-      }
-
-      .detail-tags {
-        .tags-label {
-          font-size: 13px;
-          color: var(--theme-text-secondary);
-          margin-right: 8px;
-        }
-
-        .tags-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin-top: 8px;
-
-          .tag-item {
-            cursor: pointer;
-            transition: var(--theme-transition);
-
-            &:hover {
-              color: var(--theme-primary);
-              border-color: var(--theme-primary);
-              transform: translateY(-1px);
-            }
-          }
+      a {
+        color: #1f2329;
+        text-decoration: none;
+        &:hover {
+          color: #409eff;
         }
       }
     }
 
-    .dialog-footer {
+    .detail-description {
+      font-size: 13px;
+      color: #606266;
+      line-height: 1.6;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .detail-tags .tags-list {
       display: flex;
-      justify-content: flex-end;
-      padding-top: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .tag-item {
+        font-size: 12px;
+        color: #409eff;
+        background: rgba(64, 158, 255, 0.08);
+        padding: 3px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover {
+          background: #409eff;
+          color: #ffffff;
+        }
+      }
     }
   }
 }

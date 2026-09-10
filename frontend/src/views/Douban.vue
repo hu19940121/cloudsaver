@@ -1,36 +1,60 @@
 <template>
   <div class="douban-page">
-    <div class="movie-wall">
-      <div v-for="movie in doubanStore.hotList" :key="movie.id" class="movie-item">
-        <div class="movie-poster">
+    <!-- 空状态 -->
+    <div v-if="doubanStore.hotList.length === 0" class="empty-box">
+      <el-empty description="正在加载或暂无豆瓣榜单数据..." />
+    </div>
+
+    <!-- 电影海报墙 -->
+    <div v-else class="movie-gallery">
+      <div
+        v-for="movie in doubanStore.hotList"
+        :key="movie.id"
+        class="movie-card"
+      >
+        <!-- 海报区域 -->
+        <div class="poster-container" @click="searchMovie(movie.title)">
           <el-image
-            class="movie-poster-img"
+            class="poster-img"
             :src="getDoubanImageUrl(movie.cover)"
             fit="cover"
             lazy
             :alt="movie.title"
-            hide-on-click-modal
-            :preview-src-list="[getDoubanImageUrl(movie.cover)]"
           >
             <template #error>
-              <div class="image-slot" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; background: #222;">
-                <el-image :src="defaultImage" fit="cover" />
+              <div class="poster-error">
+                <el-image :src="defaultImage" fit="contain" class="fallback-img" />
               </div>
             </template>
           </el-image>
-          <div class="movie-rate">
-            {{ movie.rate }}
+
+          <!-- 评分徽章 (右上角毛玻璃胶囊) -->
+          <div class="rate-badge">
+            <el-icon class="star-icon"><StarFilled /></el-icon>
+            <span class="rate-num">{{ movie.rate || "暂无" }}</span>
           </div>
-          <div class="movie-poster-hover" @click="searchMovie(movie.title)">
-            <div class="movie-search">
-              <el-icon class="search_icon" size="28px"><Search /></el-icon>
+
+          <!-- 悬浮微遮罩与快捷搜索 -->
+          <div class="poster-hover-overlay">
+            <div class="search-action-pill">
+              <el-icon><Search /></el-icon>
+              <span>搜网盘资源</span>
             </div>
           </div>
         </div>
-        <div class="movie-info">
-          <el-link :href="movie.url" target="_blank" :underline="false" class="movie-title">{{
-            movie.title
-          }}</el-link>
+
+        <!-- 电影标题与豆瓣外链 -->
+        <div class="movie-meta">
+          <a
+            :href="movie.url"
+            target="_blank"
+            class="movie-title"
+            :title="movie.title"
+            @click.stop
+          >
+            <span>{{ movie.title }}</span>
+            <el-icon class="external-icon"><TopRight /></el-icon>
+          </a>
         </div>
       </div>
     </div>
@@ -42,15 +66,21 @@ import { computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useDoubanStore } from "@/stores/douban";
 import { getDoubanImageUrl, defaultImage } from "@/utils/image";
+import { Search, StarFilled, TopRight } from "@element-plus/icons-vue";
+
 interface CurrentParams {
   type: string;
   tag?: string;
 }
+
 const router = useRouter();
 const route = useRoute();
 
-const routeParams = computed((): CurrentParams => ({ ...route.query }) as unknown as CurrentParams);
+const routeParams = computed(
+  (): CurrentParams => ({ ...route.query }) as unknown as CurrentParams
+);
 const doubanStore = useDoubanStore();
+
 if (routeParams.value) {
   doubanStore.setCurrentParams(routeParams.value);
 }
@@ -58,7 +88,6 @@ if (routeParams.value) {
 watch(
   () => routeParams.value,
   () => {
-    console.log(routeParams.value);
     doubanStore.setCurrentParams(routeParams.value);
   }
 );
@@ -70,23 +99,23 @@ const searchMovie = (title: string) => {
 
 <style lang="scss" scoped>
 @use "@/styles/common.scss" as *;
-@use "@/styles/responsive.scss" as *;
 
 .douban-page {
-  height: calc(100vh - 180px);
+  height: calc(100vh - 170px);
   overflow-y: auto;
+  padding: 6px 8px 30px;
 
   &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.18);
     border-radius: 4px;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.28);
     }
   }
 
@@ -95,109 +124,187 @@ const searchMovie = (title: string) => {
   }
 }
 
-.movie-wall {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 200px);
-  justify-content: space-between;
-  gap: 20px;
-  padding: 4px;
+.empty-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
 }
 
-.movie-item {
-  width: 200px;
-  background: var(--theme-card-bg);
-  border-radius: var(--theme-radius);
-  box-shadow: var(--theme-shadow);
-  box-sizing: border-box;
-  padding: 12px;
-  transition: var(--theme-transition);
+.movie-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+  gap: 22px 18px;
+  width: 100%;
+}
+
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--theme-shadow-lg);
-  }
-}
+    transform: translateY(-6px);
 
-.movie-poster-img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: var(--theme-radius);
-  overflow: hidden;
-}
+    .poster-container {
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
 
-.movie-info {
-  padding: 12px 0 4px;
-  text-align: center;
-  width: 100%;
+      .poster-img {
+        transform: scale(1.06);
+      }
 
-  .movie-title {
-    display: block;
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--theme-text-primary);
-    transition: var(--theme-transition);
-    @include text-ellipsis;
-    max-width: 100%;
-    line-height: 1.2;
+      .poster-hover-overlay {
+        opacity: 1;
 
-    &:hover {
-      color: var(--theme-primary);
+        .search-action-pill {
+          transform: translateY(0);
+        }
+      }
+    }
+
+    .movie-meta .movie-title {
+      color: var(--theme-primary, #409eff);
     }
   }
-}
 
-.movie-poster {
-  width: 100%;
-  height: 220px;
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--theme-radius);
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+  .poster-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #20242a;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
 
-.movie-poster-hover {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(2px);
-}
+    .poster-img {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+    }
 
-.movie-poster:hover .movie-poster-hover {
-  opacity: 1;
-}
+    .poster-error {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: #2c3038;
 
-.movie-rate {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: var(--theme-primary);
-  color: white;
-  padding: 0px 8px;
-  border-radius: var(--theme-radius-sm);
-  font-size: 14px;
-}
+      .fallback-img {
+        width: 50%;
+        opacity: 0.5;
+      }
+    }
 
-.movie-search {
-  color: white;
-  border-radius: var(--theme-radius);
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+    // 豆瓣评分徽章
+    .rate-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      background: rgba(18, 18, 18, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: #ffb800;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 
-  &:hover {
-    transform: scale(1.1);
+      .star-icon {
+        font-size: 11px;
+      }
+
+      .rate-num {
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+    }
+
+    // 悬浮交互遮罩
+    .poster-hover-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 3;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.88) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+      );
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 16px;
+      opacity: 0;
+      transition: opacity 0.28s ease;
+
+      .search-action-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--theme-primary, #409eff);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 20px;
+        box-shadow: 0 4px 14px rgba(64, 158, 255, 0.45);
+        transform: translateY(8px);
+        transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+
+        &:hover {
+          background: #66b1ff;
+          transform: scale(1.04) translateY(0);
+        }
+      }
+    }
+  }
+
+  .movie-meta {
+    padding: 10px 4px 2px;
+
+    .movie-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--theme-text-primary, #1d2129);
+      text-decoration: none;
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      transition: color 0.2s ease;
+
+      .external-icon {
+        font-size: 11px;
+        color: #c0c4cc;
+        opacity: 0;
+        transition: all 0.2s;
+      }
+
+      &:hover {
+        .external-icon {
+          opacity: 1;
+          color: var(--theme-primary, #409eff);
+        }
+      }
+    }
   }
 }
 </style>
